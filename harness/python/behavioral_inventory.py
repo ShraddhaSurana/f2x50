@@ -252,7 +252,7 @@ def inventories_to_json(inventories: Iterable[RepoInventory]) -> str:
 
 def write_inventory_csv(path: Path, inventories: Iterable[RepoInventory]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(
             [
                 "tier",

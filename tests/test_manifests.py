@@ -29,8 +29,8 @@ class ManifestTests(unittest.TestCase):
 
     def test_release_cardinality(self) -> None:
         self.assertEqual(len(self.repositories), 50)
-        self.assertEqual(len(self.probes), 382)
-        self.assertEqual(len(self.source_information), 382)
+        self.assertEqual(len(self.probes), 559)
+        self.assertEqual(len(self.source_information), 559)
 
     def test_every_probe_has_verified_source_information(self) -> None:
         self.assertEqual(
@@ -39,9 +39,41 @@ class ManifestTests(unittest.TestCase):
         )
         self.assertEqual({row["audit_status"] for row in self.source_information}, {"verified"})
 
+    def test_source_evidence_totals(self) -> None:
+        self.assertEqual(
+            Counter(row["oracle_kind"] for row in self.source_information),
+            {
+                "original-file-plus-driver": 444,
+                "extracted-source": 8,
+                "inline-reimplementation": 73,
+                "synthetic-fixture": 34,
+            },
+        )
+
     def test_tier_balance(self) -> None:
         self.assertEqual(Counter(row["tier"] for row in self.repositories), {"low": 20, "medium": 20, "complex": 10})
-        self.assertEqual(Counter(row["tier"] for row in self.probes), {"low": 142, "medium": 127, "complex": 113})
+        self.assertEqual(Counter(row["tier"] for row in self.probes), {"low": 203, "medium": 199, "complex": 157})
+
+    def test_direct_source_repository_coverage(self) -> None:
+        repository_by_probe = {row["probe_id"]: row["repository"] for row in self.probes}
+        direct = Counter(
+            repository_by_probe[row["probe_id"]]
+            for row in self.source_information
+            if row["oracle_kind"] == "original-file-plus-driver"
+        )
+        self.assertEqual(len(direct), 50)
+        self.assertTrue(all(count >= 5 for count in direct.values()))
+
+        direct_symbols = {}
+        for row in self.source_information:
+            if row["oracle_kind"] != "original-file-plus-driver":
+                continue
+            repository = repository_by_probe[row["probe_id"]]
+            direct_symbols.setdefault(repository, set()).add(
+                (row["upstream_path"], row["upstream_symbol"])
+            )
+        self.assertEqual(sum(len(symbols) for symbols in direct_symbols.values()), 130)
+        self.assertEqual(sum(len(symbols) >= 2 for symbols in direct_symbols.values()), 49)
 
     def test_standard_validator(self) -> None:
         validator = load_validator()

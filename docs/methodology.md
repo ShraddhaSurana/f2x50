@@ -28,13 +28,13 @@ Counts use only paths returned by `git ls-files` at the pinned revision. Suffix 
 
 ## Probe curation
 
-Probe candidates are deterministic behaviours that can be called on small, self-contained inputs. Version 0.1 was assembled during an unpublished migration study and includes both upstream-linked behaviours and disclosed adapter-oriented fixtures; it is not claimed to be a fully blind test-design exercise. Future additions must be selected without consulting a migration method's pass/fail outcomes, which avoids choosing tests that flatter a particular method.
+Probe candidates are deterministic behaviours that can be called on small, self-contained inputs. The version 0.1 development snapshot was assembled during a migration study and includes both upstream-linked behaviours and disclosed adapter-oriented fixtures; it is not claimed to be a fully blind test-design exercise. Version 0.2 strengthens source provenance without consulting migration pass/fail outcomes. Future additions must follow the same rule, which avoids choosing tests that flatter a particular method.
 
 The source-side contract is obtained in one of five explicitly recorded ways:
 
 - compile an original source routine with a small driver;
 - compile a text-audited extraction of a pinned routine;
-- expose a selected routine through a NumPy `f2py` wrapper;
+- expose a selected routine through a NumPy `f2py` wrapper (the category is supported, but version 0.2 has no remaining cases in it);
 - compile an inline reimplementation of a selected behavior; or
 - compile/use a synthetic fixture for an adapter or representation contract.
 
@@ -55,7 +55,7 @@ The executable definition stores the probe-specific input and tolerance. The pol
 A planned probe passes only if the target is runnable and agrees with its versioned Fortran-side contract. Missing, unimportable, or uninvokable targets remain in the fixed denominator:
 
 ```text
-behavioral agreement = source-agreeing targets / 382 planned probes
+behavioral agreement = source-agreeing targets / 559 planned probes
 ```
 
 Researchers may additionally report agreement among runnable cases, but should not substitute it for the fixed-denominator result. Results should also be decomposed by repository and tier because corpus-level averages can hide concentration of failures.

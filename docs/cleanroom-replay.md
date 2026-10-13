@@ -16,7 +16,7 @@ The release smoke test was executed from a newly created virtual environment and
 
 The replay performed these checks in order:
 
-1. validated all manifests and their 382 matching source-information records;
+1. validated all manifests and their 382 matching source-information records in the version 0.1 development snapshot;
 2. acquired `roots-fortran` at `fb17ecdccb5a966ae8238900c87a869b80ae1cdf` into an empty directory;
 3. recomputed and matched its 4 tracked Fortran files and 5,231 physical lines;
 4. compiled all seven checked-in `f2py` wrapper sources;
@@ -35,3 +35,11 @@ bash scripts/cleanroom_smoke.sh /tmp/f2x50-corpus
 ```
 
 The `Dockerfile` provides the Linux counterpart. It installs only Git, GNU Fortran, certificates, Python, and the three pinned Python packages before running the same smoke script. That script uses `clone_corpus.sh` to acquire the exact `roots-fortran` pin. A Docker run should be recorded here after the paper and release candidate are finalized; the macOS result above is already complete.
+
+## Version 0.2 release-candidate revalidation — 2026-09-20
+
+After expanding the catalogue, the standard validator passed with 50 repositories, 505 probes, and 505 verified source-information rows. The full reference adapter also retained the fixed denominator when target imports or calls failed: it reported 394 agreements, 62 behavioral mismatches, and 49 explicit errors across 505 planned checks and exactly 50 repositories. Thirty-four repositories passed every check. The 44-case five-per-repository expansion contributed 39 agreements, four mismatches, and one explicit target-side error. This is a harness-integrity replay against the archived migration targets, not a new benchmark result for the paper. The existing clean-room `roots-fortran` checkout was reverified at the recorded revision with matching file and line counts. The requested fresh public-clone and Linux-container replays remain release-blocking tasks and must be recorded here before submission.
+
+## Distinct-function revalidation — 2026-09-21
+
+After the outcome-neutral distinct-function expansion, the standard validator and manifest tests passed with 50 repositories, 559 probes, and 559 verified source-information rows. The full reference adapter again retained the entire denominator and reported 434 agreements, 74 behavioral mismatches, and 51 explicit errors. Twenty-six repositories passed every check, 22 contained at least one mismatch, and two produced repository-level errors. The 54 new cases contributed 40 agreements, 12 mismatches, and two target-side errors. This local replay validates harness accounting and the archived target adapter; it does not replace the requested Linux-container replay or fresh public-clone verification, which remain release-blocking tasks.

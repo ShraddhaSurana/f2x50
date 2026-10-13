@@ -25,7 +25,7 @@ def read_csv(path: Path) -> list[dict[str, str]]:
 
 def write_csv(path: Path, rows: list[dict[str, object]], fields: list[str]) -> None:
     with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer = csv.DictWriter(handle, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -70,7 +70,7 @@ def main() -> None:
         chosen = min(
             repo_probes,
             key=lambda row: hashlib.sha256(
-                f"f2x50-v0.1-independent-audit:{row['probe_id']}".encode()
+                f"f2x50-v0.2-independent-audit:{row['probe_id']}".encode()
             ).hexdigest(),
         )
         source = source_information_by_id[chosen["probe_id"]]
@@ -130,7 +130,7 @@ def main() -> None:
             "",
             "## Interpretation",
             "",
-            "The fixed contract guarantees breadth across all 50 repositories and preserves every planned case in the denominator. It is targeted regression evidence, not a proof of repository equivalence. Original-file and f2py probes provide the strongest direct source connection. Inline reimplementations and synthetic fixtures are disclosed separately because compiling a small Fortran program is not by itself evidence that the pinned upstream implementation was executed.",
+            "The fixed contract guarantees breadth across all 50 repositories and preserves every planned case in the denominator. It is targeted regression evidence, not a proof of repository equivalence. Original-file-plus-driver probes provide the strongest direct source connection; version 0.2 has no remaining f2py-wrapper cases. Inline reimplementations and synthetic fixtures are disclosed separately because compiling a small Fortran program is not by itself evidence that the pinned upstream implementation was executed.",
             "",
             "`manifests/coverage_by_repository.csv` supports tier/repository decompositions. `manifests/independent_audit_sample.csv` deterministically selects one probe per repository using SHA-256 over the stable probe ID. A person who did not author the corresponding verifier should check the source locator, input, expected behavior, and comparison rule and fill the three review columns. Until then, the sample is explicitly marked pending and must not be described as independently audited.",
             "",

@@ -16,7 +16,7 @@ If an upstream licence changes after the pin, the licence at the benchmark revis
 
 ## Release policy for the three `NOASSERTION` pins
 
-Version 0.1 retains all three repositories as origin-only pins. The benchmark stores metadata, URLs, revisions, measurements, and independently authored contracts; it does not redistribute their upstream source. This preserves the fixed 50-repository composition without describing the three projects as open source. Acquisition remains opt-in, and users are responsible for determining whether their intended local use, translation, or redistribution is permitted.
+Version 0.2 retains all three repositories as origin-only pins. The benchmark stores metadata, URLs, revisions, measurements, and independently authored contracts; it does not redistribute their upstream source. This preserves the fixed 50-repository composition without describing the three projects as open source. Acquisition remains opt-in, and users are responsible for determining whether their intended local use, translation, or redistribution is permitted.
 
 | Policy | Benchmark impact | Risk |
 |---|---|---|
@@ -25,4 +25,4 @@ Version 0.1 retains all three repositories as origin-only pins. The benchmark st
 | Replace all three `NOASSERTION` pins | Same version-changing work for three entries. | Cleanest release story and the strongest basis for describing every pin as openly reusable. |
 | Obtain explicit permission from the upstream owners | Preserves composition if permission covers acquisition, analysis, derived translations, and publication of benchmark metadata/contracts. | Timing and scope of permission may be uncertain; archive the written permission with the release records. |
 
-Repository replacement is outside the version 0.1 release policy. Any future change to a pin or probe would define a new benchmark version and require recomputing every aggregate and regenerating the paper.
+Repository replacement is outside the version 0.2 release policy. Any future change to a pin or probe would define a new benchmark version and require recomputing every aggregate and regenerating the paper.

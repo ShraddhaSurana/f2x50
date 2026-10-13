@@ -64,7 +64,7 @@ def probe_coverage(probes: list[dict[str, str]], output: Path) -> None:
         ax.text(total + 2, index, str(total), va="center", fontsize=9)
     ax.set_xlim(0, max(left) + 20)
     ax.set_xlabel("Planned behavioral probes")
-    ax.set_title("f2x50 behavioral-probe coverage (n = 382)")
+    ax.set_title(f"f2x50 behavioral-probe coverage (n = {len(probes)})")
     handles, legend_labels = ax.get_legend_handles_labels()
     fig.legend(handles, legend_labels, frameon=False, ncol=3, loc="lower center", bbox_to_anchor=(0.5, 0.01))
     fig.subplots_adjust(left=0.12, right=0.97, top=0.89, bottom=0.25)
@@ -94,18 +94,17 @@ def source_information_figure(source_information: list[dict[str, str]], output: 
     ax.bar_label(bars, padding=4)
     ax.set_xlim(0, max(values) * 1.14)
     ax.set_xlabel("Planned probes")
-    ax.set_title("Source-evidence categories (n = 382)")
-    ax.text(
-        0.99,
-        0.03,
+    ax.set_title(f"Source-evidence categories (n = {len(source_information)})")
+    fig.text(
+        0.95,
+        0.04,
         "Categories describe source-side execution, not pass/fail outcomes.",
-        transform=ax.transAxes,
         ha="right",
         va="bottom",
         fontsize=8.5,
         color="#555555",
     )
-    fig.subplots_adjust(left=0.28, right=0.95, top=0.87, bottom=0.18)
+    fig.subplots_adjust(left=0.28, right=0.95, top=0.87, bottom=0.23)
     save(fig, output / "source_information")
 
 

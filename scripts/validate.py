@@ -11,15 +11,24 @@ from collections import Counter
 from pathlib import Path
 
 EXPECTED_REPOSITORIES = {"low": 20, "medium": 20, "complex": 10}
-EXPECTED_PROBES = {"low": 142, "medium": 127, "complex": 113}
+EXPECTED_PROBES = {"low": 203, "medium": 199, "complex": 157}
 EXPECTED_MODES = {
-    "numeric": 205,
-    "exact-array": 93,
-    "exact": 57,
-    "exact-bool-array": 19,
-    "exact-bool": 4,
-    "exact-duration-seconds": 4,
+    "numeric": 278,
+    "exact-array": 158,
+    "exact": 80,
+    "exact-bool-array": 33,
+    "exact-bool": 5,
+    "exact-duration-seconds": 5,
 }
+EXPECTED_ORACLE_KINDS = {
+    "original-file-plus-driver": 444,
+    "extracted-source": 8,
+    "inline-reimplementation": 73,
+    "synthetic-fixture": 34,
+}
+EXPECTED_DIRECT_SOURCE_REPOSITORIES = 50
+EXPECTED_DIRECT_SOURCE_PAIRS = 130
+EXPECTED_MULTI_SYMBOL_REPOSITORIES = 49
 REPOSITORY_FIELDS = {
     "benchmark_id",
     "tier",
@@ -102,6 +111,48 @@ def validate(root: Path) -> list[str]:
     mode_counts = Counter(row.get("comparison_mode", "") for row in probes)
     if mode_counts != Counter(EXPECTED_MODES):
         errors.append(f"comparison-mode counts {dict(mode_counts)} != {EXPECTED_MODES}")
+    oracle_counts = Counter(row.get("oracle_kind", "") for row in source_information)
+    if oracle_counts != Counter(EXPECTED_ORACLE_KINDS):
+        errors.append(f"oracle-kind counts {dict(oracle_counts)} != {EXPECTED_ORACLE_KINDS}")
+
+    repository_by_probe = {row.get("probe_id", ""): row.get("repository", "") for row in probes}
+    direct_by_repository = Counter(
+        repository_by_probe.get(row.get("probe_id", ""), "")
+        for row in source_information
+        if row.get("oracle_kind") == "original-file-plus-driver"
+    )
+    direct_by_repository.pop("", None)
+    if len(direct_by_repository) != EXPECTED_DIRECT_SOURCE_REPOSITORIES:
+        errors.append(
+            f"direct-source repository coverage {len(direct_by_repository)} != "
+            f"{EXPECTED_DIRECT_SOURCE_REPOSITORIES}"
+        )
+    undercovered = sorted(name for name, count in direct_by_repository.items() if count < 5)
+    if undercovered:
+        errors.append(f"repositories with fewer than five direct-source probes: {undercovered}")
+
+    direct_symbols_by_repository: dict[str, set[tuple[str, str]]] = {}
+    for row in source_information:
+        if row.get("oracle_kind") != "original-file-plus-driver":
+            continue
+        repository = repository_by_probe.get(row.get("probe_id", ""), "")
+        direct_symbols_by_repository.setdefault(repository, set()).add(
+            (row.get("upstream_path", ""), row.get("upstream_symbol", ""))
+        )
+    direct_pair_count = sum(len(symbols) for symbols in direct_symbols_by_repository.values())
+    if direct_pair_count != EXPECTED_DIRECT_SOURCE_PAIRS:
+        errors.append(
+            f"direct-source repository-symbol pairs {direct_pair_count} != "
+            f"{EXPECTED_DIRECT_SOURCE_PAIRS}"
+        )
+    multi_symbol_count = sum(
+        len(symbols) >= 2 for symbols in direct_symbols_by_repository.values()
+    )
+    if multi_symbol_count != EXPECTED_MULTI_SYMBOL_REPOSITORIES:
+        errors.append(
+            f"repositories with at least two direct-source symbols {multi_symbol_count} != "
+            f"{EXPECTED_MULTI_SYMBOL_REPOSITORIES}"
+        )
 
     for label, values in (
         ("benchmark_id", [row.get("benchmark_id", "") for row in repositories]),
@@ -193,7 +244,7 @@ def main() -> int:
         for error in errors:
             print(f"- {error}", file=sys.stderr)
         return 1
-    print("f2x50 validation passed: 50 repositories and 382 behavioral probes")
+    print(f"f2x50 validation passed: {sum(EXPECTED_REPOSITORIES.values())} repositories and {sum(EXPECTED_PROBES.values())} behavioral probes")
     return 0
 
 

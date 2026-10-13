@@ -11,7 +11,7 @@ The executable definitions are split between:
 - `harness/python/run_corpus_verification.py`, which contains the original reference verifiers; and
 - `harness/python/extended_repo_verifiers.py`, which extends coverage to the complete 50-repository set.
 
-The other Python files inventory candidates and support automated probes. `harness/fortran_stubs/` contains seven small Fortran sources used by the reference adapter. Run `harness/build_fortran_stubs.sh` to build local `f2py` extensions; generated `.so` and `.mod` files must not be committed.
+The other Python files inventory candidates and support automated probes. `harness/fortran_stubs/` contains seven small Fortran sources retained for compatibility and development. Version 0.2's released provenance audit contains no `f2py-wrapper` cases: direct cases compile pinned repository files with standalone drivers. Generated `.so` and `.mod` files must not be committed.
 
 ## Fortran-side execution and source information
 
@@ -33,19 +33,19 @@ python harness/python/run_corpus_verification.py
 
 | Comparison mode | Probes |
 |---|---:|
-| Numeric tolerance | 205 |
-| Exact array | 93 |
-| Exact scalar/string | 57 |
-| Exact Boolean array | 19 |
-| Exact Boolean | 4 |
-| Normalized duration | 4 |
-| **Total** | **382** |
+| Numeric tolerance | 278 |
+| Exact array | 158 |
+| Exact scalar/string | 80 |
+| Exact Boolean array | 33 |
+| Exact Boolean | 5 |
+| Normalized duration | 5 |
+| **Total** | **559** |
 
-Tier totals are 142 low, 127 medium, and 113 complex probes. Every repository has at least four planned probes.
+Tier totals are 203 low, 199 medium, and 157 complex probes. Every repository has at least five planned probes and at least five `original-file-plus-driver` probes. The 444 direct cases cover 130 repository-routine pairs, and 49 repositories execute at least two distinct pinned routines. Relative to the 382-probe development snapshot, version 0.2 adds 177 checks and raises direct pinned-source execution from 75 to 444 checks across all 50 repositories.
 
 ![Source-evidence categories](figures/source_information.png)
 
-The release-level and per-repository density analysis is in [`coverage-audit.md`](coverage-audit.md). Its deterministic 50-probe sample is an optional checklist for future external review; version 0.1 makes no claim of independent validation.
+The release-level and per-repository density analysis is in [`coverage-audit.md`](coverage-audit.md). Its deterministic 50-probe sample is an optional checklist for future external review; version 0.2 makes no claim of independent validation.
 
 ## Adding another target adapter
 

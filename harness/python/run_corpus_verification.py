@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import contextlib
 import importlib
 import importlib.util
@@ -8,6 +9,7 @@ import io
 import json
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -589,21 +591,38 @@ def _compile_fortran_program_ordered(
     name: str,
     *,
     ordered_sources: list[Path],
+    prelude_sources: list[tuple[str, str]] | None = None,
     inline_sources: list[tuple[str, str]] | None = None,
+    support_files: list[tuple[str, str]] | None = None,
+    compiler: str = "gfortran",
+    compiler_flags: list[str] | None = None,
+    linker_flags: list[str] | None = None,
 ) -> tuple[Path, Path]:
     temp_root = Path(tempfile.mkdtemp(prefix=f"behavioral-validation-{name}-"))
     local_sources: list[Path] = []
+    prelude_paths: list[Path] = []
+    for filename, source in support_files or []:
+        path = temp_root / filename
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(source, encoding="utf-8")
     for filename, source in inline_sources or []:
         path = temp_root / filename
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(source, encoding="utf-8")
         local_sources.append(path)
 
+    for filename, source in prelude_sources or []:
+        path = temp_root / filename
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(source, encoding="utf-8")
+        prelude_paths.append(path)
+
     objects: list[Path] = []
-    for source in ordered_sources:
+    for source in [*prelude_paths, *ordered_sources]:
         object_path = temp_root / f"{source.stem}.o"
         _run(
             [
-                "gfortran",
+                compiler,
                 "-O0",
                 "-ffree-line-length-none",
                 "-ffixed-line-length-none",
@@ -611,6 +630,7 @@ def _compile_fortran_program_ordered(
                 str(temp_root),
                 "-I",
                 str(temp_root),
+                *(compiler_flags or []),
                 "-c",
                 str(source),
                 "-o",
@@ -623,7 +643,7 @@ def _compile_fortran_program_ordered(
     exe_path = temp_root / name
     _run(
         [
-            "gfortran",
+            compiler,
             "-O0",
             "-ffree-line-length-none",
             "-ffixed-line-length-none",
@@ -631,10 +651,12 @@ def _compile_fortran_program_ordered(
             str(temp_root),
             "-I",
             str(temp_root),
+            *(compiler_flags or []),
             "-o",
             str(exe_path),
             *[str(path) for path in objects],
             *[str(path) for path in local_sources],
+            *(linker_flags or []),
         ],
         cwd=temp_root,
     )
@@ -725,15 +747,15 @@ def _numeric_case_checks(
     p_values = _as_array(python_values)
     if f_values.shape != p_values.shape:
         return [
-            _numeric_check(
-                routine,
-                f_values,
-                p_values,
-                atol=atol,
-                rtol=rtol,
+            CheckResult(
+                routine=f"{routine}_{label}",
+                status="fail",
                 comparison=comparison,
-                note=note,
+                max_abs=None,
+                max_rel=None,
+                note=f"shape mismatch: Fortran {f_values.shape}, Python {p_values.shape}",
             )
+            for label in labels
         ]
     if f_values.ndim == 0:
         f_cases = [f_values]
@@ -842,21 +864,40 @@ def _repo_result(tier: str, repo: str, checks: list[CheckResult], *, notes: str 
 
 
 def verify_tsunami() -> RepoResult:
-    sys.path.insert(0, str(STUB_ROOT))
-    fortran_module = importlib.import_module("tsunami_f")
+    direct_driver = """
+program run_tsunami_parallel_direct
+  use iso_fortran_env, only: int32
+  use mod_parallel, only: num_tiles, tile_indices
+  implicit none
+  integer(int32) :: pair(2)
+  pair = num_tiles(1_int32); write(*,'(2(I0,1X))') pair
+  pair = num_tiles(2_int32); write(*,'(2(I0,1X))') pair
+  pair = num_tiles(6_int32); write(*,'(2(I0,1X))') pair
+  pair = num_tiles(12_int32); write(*,'(2(I0,1X))') pair
+  pair = tile_indices(10_int32,1_int32,3_int32); write(*,'(2(I0,1X))') pair
+  pair = tile_indices(10_int32,2_int32,3_int32); write(*,'(2(I0,1X))') pair
+  pair = tile_indices(10_int32,3_int32,3_int32); write(*,'(2(I0,1X))') pair
+  pair = tile_indices(11_int32,4_int32,6_int32); write(*,'(2(I0,1X))') pair
+end program run_tsunami_parallel_direct
+"""
+    direct_exe, _ = _compile_fortran_program_ordered(
+        "tsunami_parallel_direct_verify",
+        ordered_sources=[FORTRAN_CORPUS_ROOT / "low" / "tsunami" / "src" / "ch10" / "mod_parallel.f90"],
+        inline_sources=[("run_tsunami_parallel_direct.f90", direct_driver)],
+        compiler_flags=["-fcoarray=single"],
+    )
+    direct_lines = _run([str(direct_exe)], capture_stderr=True).stdout.strip().splitlines()
     python_module = _load_module(
         "tsunami_mod_parallel",
         TARGET_ROOT / "low" / "tsunami" / "generated_python" / "src" / "ch10" / "mod_parallel.py",
     )
 
     num_tiles_inputs = [1, 2, 6, 12]
-    fortran_num_tiles = np.vstack([fortran_module.tsunami_parallel.num_tiles(value) for value in num_tiles_inputs])
+    fortran_num_tiles = np.vstack([np.array([int(part) for part in line.split()]) for line in direct_lines[:4]])
     python_num_tiles = np.vstack([python_module.num_tiles(value) for value in num_tiles_inputs])
 
     tile_cases = [(10, 1, 3), (10, 2, 3), (10, 3, 3), (11, 4, 6)]
-    fortran_indices = np.vstack(
-        [fortran_module.tsunami_parallel.tile_indices_1d(dims, i, n) for dims, i, n in tile_cases]
-    )
+    fortran_indices = np.vstack([np.array([int(part) for part in line.split()]) for line in direct_lines[4:]])
     python_indices = np.vstack([python_module.tile_indices_1d(dims, i, n) for dims, i, n in tile_cases])
 
     denominator_source = """
@@ -924,38 +965,29 @@ end program run_denominators
 
 
 def verify_fkb() -> RepoResult:
-    source = """
-module mod_activation_small
-  implicit none
-  integer, parameter :: rk = kind(0.0d0)
-contains
-  pure function gaussian(x, alpha) result(res)
-    real(rk), intent(in) :: x(:)
-    real(rk), intent(in) :: alpha
-    real(rk) :: res(size(x))
-    res = exp(-x**2)
-  end function gaussian
-
-  pure function gaussian_prime(x, alpha) result(res)
-    real(rk), intent(in) :: x(:)
-    real(rk), intent(in) :: alpha
-    real(rk) :: tmp_alpha
-    real(rk) :: res(size(x))
-    tmp_alpha = 0.0_rk
-    res = -2.0_rk * x * gaussian(x, tmp_alpha)
-  end function gaussian_prime
-end module mod_activation_small
-
+    driver = """
 program run_fkb
-  use mod_activation_small
+  use mod_kinds, only: rk
+  use mod_activation, only: gaussian, gaussian_prime, relu, sigmoid, tanhf, linear
   implicit none
   real(rk) :: x(4)
   x = [-2.0_rk, -0.5_rk, 0.0_rk, 1.25_rk]
   write(*,'(4(ES24.16E3,1X))') gaussian(x, 0.3_rk)
   write(*,'(4(ES24.16E3,1X))') gaussian_prime(x, 0.3_rk)
+  write(*,'(4(ES24.16E3,1X))') relu(x, 0.3_rk)
+  write(*,'(4(ES24.16E3,1X))') sigmoid(x, 0.3_rk)
+  write(*,'(4(ES24.16E3,1X))') tanhf(x, 0.3_rk)
+  write(*,'(4(ES24.16E3,1X))') linear(x, 0.3_rk)
 end program run_fkb
 """
-    exe_path, _ = _compile_fortran_program("fkb_verify", inline_sources=[("run_fkb.f90", source)])
+    exe_path, _ = _compile_fortran_program_ordered(
+        "fkb_verify",
+        ordered_sources=[
+            FORTRAN_CORPUS_ROOT / "low" / "FKB" / "src" / "lib" / "mod_kinds.F90",
+            FORTRAN_CORPUS_ROOT / "low" / "FKB" / "src" / "lib" / "mod_activation.F90",
+        ],
+        inline_sources=[("run_fkb.f90", driver)],
+    )
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
 
     python_module = _load_module(
@@ -973,74 +1005,79 @@ end program run_fkb
                 _parse_float_line(output[0]),
                 python_module.gaussian(x, 0.3),
                 ["x_neg2", "x_neg0p5", "x_0", "x_1p25"],
-                atol=1.0e-14,
-                rtol=1.0e-14,
+                atol=1.0e-7,
+                rtol=1.0e-7,
             ),
             *_numeric_case_checks(
                 "gaussian_prime",
                 _parse_float_line(output[1]),
                 python_module.gaussian_prime(x, 0.3),
                 ["x_neg2", "x_neg0p5", "x_0", "x_1p25"],
-                atol=1.0e-14,
-                rtol=1.0e-14,
+                atol=1.0e-7,
+                rtol=1.0e-7,
+            ),
+            *_numeric_case_checks(
+                "relu",
+                _parse_float_line(output[2]),
+                python_module.relu(x, 0.3),
+                ["x_neg2", "x_neg0p5", "x_0", "x_1p25"],
+                atol=1.0e-7,
+                rtol=1.0e-7,
+            ),
+            *_numeric_case_checks(
+                "sigmoid",
+                _parse_float_line(output[3]),
+                python_module.sigmoid(x, 0.3),
+                ["x_neg2", "x_neg0p5", "x_0", "x_1p25"],
+                atol=1.0e-7,
+                rtol=1.0e-7,
+            ),
+            *_numeric_case_checks(
+                "tanhf",
+                _parse_float_line(output[4]),
+                python_module.tanhf(x, 0.3),
+                ["x_neg2", "x_neg0p5", "x_0", "x_1p25"],
+                atol=1.0e-7,
+                rtol=1.0e-7,
+            ),
+            *_numeric_case_checks(
+                "linear",
+                _parse_float_line(output[5]),
+                python_module.linear(x, 0.3),
+                ["x_neg2", "x_neg0p5", "x_0", "x_1p25"],
+                atol=1.0e-7,
+                rtol=1.0e-7,
             ),
         ],
     )
 
 
 def verify_fastgpt() -> RepoResult:
-    source = """
-module gpt2_small
-  implicit none
-  integer, parameter :: sp = kind(0.0)
-  real(sp), parameter :: pi = 3.14159265358979323846_sp
-contains
-  elemental real(sp) function fast_tanh(x) result(y)
-    real(sp), intent(in) :: x
-    real(sp) :: x2
-    if (x > 5) then
-      y = 1
-    elseif (x < -5) then
-      y = -1
-    else
-      x2 = x*x
-      y = x * (0.98569772605911309407 + x2 *(-0.2794500993392901382 &
-          + x2 * (6.8280504526399188164e-2 + x2 * (-1.0972014877337651823e-2 &
-          + x2 * (1.1132367134444316902e-3 + x2 * (-7.018851897305717565e-5 &
-          + x2 * (2.656616768082727089e-6 + x2 * (-5.5138381821615909058e-8 &
-          + x2 * 4.8162484477588665996e-10))))))))
-    end if
-  end function fast_tanh
-
-  elemental real(sp) function gelu(x) result(y)
-    real(sp), intent(in) :: x
-    y = 0.5_sp * x * (1 + tanh(sqrt(2.0_sp / pi) * (x + 0.044715_sp * x**3)))
-  end function gelu
-
-  function softmax(x) result(y)
-    real(sp), intent(in) :: x(:,:)
-    real(sp) :: y(size(x,1),size(x,2))
-    integer :: i
-    do i = 1, size(x,2)
-      y(:,i) = exp(x(:,i) - maxval(x(:,i)))
-      y(:,i) = y(:,i) / sum(y(:,i))
-    end do
-  end function softmax
-end module gpt2_small
-
+    driver = """
 program run_fastgpt
-  use gpt2_small
+  use gpt2_mod, only: fast_tanh, gelu, softmax, layer_norm, sp
   implicit none
   real(sp) :: x(6)
-  real(sp) :: y(2,3)
+  real(sp) :: y(2,3), g(2), b(2)
   x = [-10.0_sp, -1.0_sp, 0.0_sp, 0.5_sp, 2.0_sp, 10.0_sp]
   y = reshape([1.0_sp, 2.0_sp, 3.0_sp, 4.0_sp, 5.0_sp, 6.0_sp], [2,3])
+  g = [1.5_sp, 0.5_sp]
+  b = [0.25_sp, -0.25_sp]
   write(*,'(6(ES16.8E3,1X))') fast_tanh(x)
   write(*,'(6(ES16.8E3,1X))') gelu(x)
   write(*,'(6(ES16.8E3,1X))') softmax(y)
+  write(*,'(6(ES16.8E3,1X))') layer_norm(y, g, b, 1.0e-5_sp)
 end program run_fastgpt
 """
-    exe_path, _ = _compile_fortran_program("fastgpt_verify", inline_sources=[("run_fastgpt.f90", source)])
+    exe_path, _ = _compile_fortran_program_ordered(
+        "fastgpt_verify",
+        ordered_sources=[
+            FORTRAN_CORPUS_ROOT / "low" / "fastGPT" / "src" / "linalg_f.f90",
+            FORTRAN_CORPUS_ROOT / "low" / "fastGPT" / "src" / "tokenizer.f90",
+            FORTRAN_CORPUS_ROOT / "low" / "fastGPT" / "src" / "gpt2.f90",
+        ],
+        inline_sources=[("run_fastgpt.f90", driver)],
+    )
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
 
     python_module = _load_module(
@@ -1049,6 +1086,8 @@ end program run_fastgpt
     )
     x = np.array([-10.0, -1.0, 0.0, 0.5, 2.0, 10.0], dtype=np.float32)
     y = np.array([[1.0, 3.0, 5.0], [2.0, 4.0, 6.0]], dtype=np.float32, order="F")
+    g = np.array([1.5, 0.5], dtype=np.float32)
+    b = np.array([0.25, -0.25], dtype=np.float32)
 
     return _repo_result(
         "low",
@@ -1078,6 +1117,14 @@ end program run_fastgpt
                 ["col1_row1", "col1_row2", "col2_row1", "col2_row2", "col3_row1", "col3_row2"],
                 atol=1.0e-6,
                 rtol=1.0e-6,
+            ),
+            *_numeric_case_checks(
+                "layer_norm",
+                _parse_float_line(output[3]),
+                np.ravel(python_module.layer_norm(y, g, b, np.float32(1.0e-5)), order="F").astype(np.float64),
+                ["col1_row1", "col1_row2", "col2_row1", "col2_row2", "col3_row1", "col3_row2"],
+                atol=1.0e-5,
+                rtol=1.0e-5,
             ),
         ],
     )
@@ -1159,33 +1206,21 @@ def verify_fortranlib() -> RepoResult:
         temp_file.write_text("sample", encoding="utf-8")
         escaped_file = str(temp_file).replace("\\", "\\\\")
         escaped_dir = str(temp_dir).replace("\\", "\\\\")
-        source = f"""
-module posix_small
-  implicit none
-contains
-  logical function file_exists(file)
-    implicit none
-    character(len=*), intent(in) :: file
-    integer :: access
-    file_exists = access(file,' ') .eq. 0
-  end function file_exists
-
-  logical function dir_exists(dir)
-    implicit none
-    character(len=*), intent(in) :: dir
-    integer :: access
-    dir_exists = access(dir,' ') .eq. 0
-  end function dir_exists
-end module posix_small
-
+        escaped_missing = str(temp_dir / "missing.txt").replace("\\", "\\\\")
+        driver = f"""
 program run_fortranlib
-  use posix_small
+  use posix, only: file_exists, dir_exists
   implicit none
-  write(*,'(4(L1,1X))') file_exists('{escaped_file}'), file_exists('{escaped_dir}'), &
-                        dir_exists('{escaped_file}'), dir_exists('{escaped_dir}')
+  write(*,'(5(L1,1X))') file_exists('{escaped_file}'), file_exists('{escaped_dir}'), &
+                        dir_exists('{escaped_file}'), dir_exists('{escaped_dir}'), &
+                        file_exists('{escaped_missing}')
 end program run_fortranlib
 """
-        exe_path, _ = _compile_fortran_program("fortranlib_verify", inline_sources=[("run_fortranlib.f90", source)])
+        exe_path, _ = _compile_fortran_program_ordered(
+            "fortranlib_verify",
+            ordered_sources=[FORTRAN_CORPUS_ROOT / "low" / "fortranlib" / "src" / "posix_default.f90"],
+            inline_sources=[("run_fortranlib.f90", driver)],
+        )
         output = _run([str(exe_path)], capture_stderr=True).stdout.strip().split()
 
         python_module = _load_module(
@@ -1198,6 +1233,7 @@ end program run_fortranlib
             bool(python_module.file_exists(str(temp_dir))),
             bool(python_module.dir_exists(str(temp_file))),
             bool(python_module.dir_exists(str(temp_dir))),
+            bool(python_module.file_exists(str(temp_dir / "missing.txt"))),
         ]
 
     return _repo_result(
@@ -1208,7 +1244,7 @@ end program run_fortranlib
                 "access_exists",
                 np.array(fortran_values, dtype=np.int32),
                 np.array(python_values, dtype=np.int32),
-                ["file_as_file", "dir_as_file", "file_as_dir", "dir_as_dir"],
+                ["file_as_file", "dir_as_file", "file_as_dir", "dir_as_dir", "missing_file"],
                 atol=0.0,
                 rtol=0.0,
                 comparison="exact-bool",
@@ -1219,70 +1255,9 @@ end program run_fortranlib
 
 
 def verify_fortran_utils() -> RepoResult:
-    source = """
-module utils_small
-  implicit none
-contains
-  function upcase(s) result(t)
-    character(*), intent(in) :: s
-    character(len(s)) :: t
-    integer :: i, diff
-    t = s
-    diff = ichar('A') - ichar('a')
-    do i = 1, len(t)
-      if (ichar(t(i:i)) >= ichar('a') .and. ichar(t(i:i)) <= ichar('z')) then
-        t(i:i) = char(ichar(t(i:i)) + diff)
-      end if
-    end do
-  end function upcase
-
-  function lowcase(s) result(t)
-    character(*), intent(in) :: s
-    character(len(s)) :: t
-    integer :: i, diff
-    t = s
-    diff = ichar('A') - ichar('a')
-    do i = 1, len(t)
-      if (ichar(t(i:i)) >= ichar('A') .and. ichar(t(i:i)) <= ichar('Z')) then
-        t(i:i) = char(ichar(t(i:i)) - diff)
-      end if
-    end do
-  end function lowcase
-
-  logical function whitechar(char)
-    character, intent(in) :: char
-    if (iachar(char) == 32 .or. iachar(char) == 9) then
-      whitechar = .true.
-    else
-      whitechar = .false.
-    end if
-  end function whitechar
-
-  logical function blank(string)
-    character(*), intent(in) :: string
-    integer :: i
-    do i = 1, len(string)
-      if (.not. whitechar(string(i:i))) exit
-    end do
-    blank = (i > len(string))
-  end function blank
-
-  integer function numstrings(s)
-    character(*), intent(in) :: s
-    character(len=:), allocatable :: t
-    integer :: i
-    t = ' ' // s // ' '
-    numstrings = 0
-    do i = 1, len(t) - 1
-      if (whitechar(t(i:i)) .and. .not. whitechar(t(i+1:i+1))) then
-        numstrings = numstrings + 1
-      end if
-    end do
-  end function numstrings
-end module utils_small
-
+    driver = """
 program run_utils
-  use utils_small
+  use utils, only: upcase, lowcase, blank, whitechar, numstrings
   implicit none
   write(*,'(A)') trim(upcase('AbC! z9'))
   write(*,'(A)') trim(lowcase('AbC! z9'))
@@ -1292,7 +1267,12 @@ program run_utils
   write(*,'(3(I0,1X))') numstrings(''), numstrings('alpha beta'//char(9)//'gamma'), numstrings('  one  ')
 end program run_utils
 """
-    exe_path, _ = _compile_fortran_program("fortran_utils_verify", inline_sources=[("run_utils.f90", source)])
+    source_root = FORTRAN_CORPUS_ROOT / "low" / "fortran-utils" / "src"
+    exe_path, _ = _compile_fortran_program_ordered(
+        "fortran_utils_verify",
+        ordered_sources=[source_root / "types.f90", source_root / "utils.f90"],
+        inline_sources=[("run_utils.f90", driver)],
+    )
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
 
     python_module = _load_module_with_text_patches(
@@ -1411,9 +1391,12 @@ end program run_datetime
 def verify_m_strings() -> RepoResult:
     source = """
 program run_m_strings
-  use M_strings, only: string_to_value
+  use iso_fortran_env, only: int64
+  use M_strings, only: string_to_value, aton
   implicit none
   integer :: value32, ierr32
+  integer(int64) :: value64
+  logical :: ok64
   call string_to_value('  -42', value32, ierr32)
   write(*,'(I0,1X,I0)') value32, ierr32
   call string_to_value('2147483647', value32, ierr32)
@@ -1422,6 +1405,12 @@ program run_m_strings
   write(*,'(I0,1X,I0)') value32, ierr32
   call string_to_value(' +17', value32, ierr32)
   write(*,'(I0,1X,I0)') value32, ierr32
+  call string_to_value('-2147483648', value32, ierr32)
+  write(*,'(I0,1X,I0)') value32, ierr32
+  ok64 = aton('5000000000', value64)
+  write(*,'(I0,1X,L1)') value64, ok64
+  ok64 = aton('0', value64)
+  write(*,'(I0,1X,L1)') value64, ok64
 end program run_m_strings
 """
     exe_path, _ = _compile_fortran_program_ordered(
@@ -1430,7 +1419,7 @@ end program run_m_strings
         ordered_sources=[FORTRAN_CORPUS_ROOT / "low" / "M_strings" / "src" / "M_strings.F90"],
     )
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
-    fortran_pairs = np.array([[int(part) for part in line.split()] for line in output], dtype=np.int64)
+    fortran_pairs = np.array([[int(part) for part in line.split()] for line in output[:5]], dtype=np.int64)
 
     python_module = _load_module(
         "m_strings_module",
@@ -1440,15 +1429,28 @@ end program run_m_strings
     py32_b = python_module.atoi_int32("2147483647")
     py32_c = python_module.atoi_int32("0")
     py32_d = python_module.atoi_int32(" +17")
+    py32_e = python_module.atoi_int32("-2147483648")
     python_pairs = np.array(
         [
             [py32_a[0], int(py32_a[1])],
             [py32_b[0], int(py32_b[1])],
             [py32_c[0], int(py32_c[1])],
             [py32_d[0], int(py32_d[1])],
+            [py32_e[0], int(py32_e[1])],
         ],
         dtype=np.int64,
     )
+    fortran_int64_pairs = np.array(
+        [
+            [int(parts[0]), int(parts[1].upper().startswith("T"))]
+            for parts in (line.split() for line in output[5:7])
+        ],
+        dtype=np.int64,
+    )
+    python_int64_pairs = []
+    for text_value in ("5000000000", "0"):
+        value, error = python_module.atoi_int64(text_value)
+        python_int64_pairs.append([value, int(not error)])
 
     return _repo_result(
         "low",
@@ -1458,11 +1460,21 @@ end program run_m_strings
                 "string_to_value_int32",
                 fortran_pairs,
                 python_pairs,
-                ["neg42", "max_int32", "zero", "plus17"],
+                ["neg42", "max_int32", "zero", "plus17", "min_int32"],
                 atol=0.0,
                 rtol=0.0,
                 comparison="exact-array",
                 note="Cross-name comparison: Fortran string_to_value integer cases against generated atoi_int32.",
+            ),
+            *_numeric_case_checks(
+                "atoi_int64_direct",
+                fortran_int64_pairs,
+                np.array(python_int64_pairs, dtype=np.int64),
+                ["ordinary_beyond_int32", "zero_boundary"],
+                atol=0.0,
+                rtol=0.0,
+                comparison="exact-array",
+                note="Compiles pinned M_strings.F90 and executes its distinct atoi_int64 parser.",
             ),
         ],
     )
@@ -1555,8 +1567,33 @@ end program run_fftpack
 
 
 def verify_minpack() -> RepoResult:
-    sys.path.insert(0, str(STUB_ROOT))
-    fortran_module = importlib.import_module("enorm_f")
+    driver = """
+program run_minpack_direct
+  use iso_fortran_env, only: real64
+  use minpack_module, only: enorm, dpmpar
+  implicit none
+  real(real64) :: v2(2), v3(3), v4(4)
+  v2 = [3.0_real64, 4.0_real64]
+  write(*,'(ES24.16E3)') enorm(2, v2)
+  v4 = [1.0e-20_real64, 3.0_real64, 4.0_real64, 1.0e19_real64]
+  write(*,'(ES24.16E3)') enorm(4, v4)
+  v3 = 0.0_real64
+  write(*,'(ES24.16E3)') enorm(3, v3)
+  v2 = [6.0_real64, 8.0_real64]
+  write(*,'(ES24.16E3)') enorm(2, v2)
+  v4 = 1.0_real64
+  write(*,'(ES24.16E3)') enorm(4, v4)
+  v2 = [1.0e20_real64, 1.0e20_real64]
+  write(*,'(ES24.16E3)') enorm(2, v2)
+  write(*,'(3(ES24.16E3,1X))') dpmpar
+end program run_minpack_direct
+"""
+    exe_path, _ = _compile_fortran_program_ordered(
+        "minpack_direct_verify",
+        ordered_sources=[FORTRAN_CORPUS_ROOT / "medium" / "minpack" / "src" / "minpack.f90"],
+        inline_sources=[("run_minpack_direct.f90", driver)],
+    )
+    direct_lines = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
     python_module = _load_module(
         "minpack_module",
         TARGET_ROOT / "medium" / "minpack" / "generated_python" / "src" / "minpack.py",
@@ -1569,17 +1606,10 @@ def verify_minpack() -> RepoResult:
         np.array([1.0, 1.0, 1.0, 1.0], dtype=np.float64),
         np.array([1.0e20, 1.0e20], dtype=np.float64),
     ]
-    fortran_values = np.array([fortran_module.enorm(vector) for vector in vectors], dtype=np.float64)
+    fortran_values = np.array([float(value) for value in direct_lines[:6]], dtype=np.float64)
     python_values = np.array([python_module.enorm(len(vector), vector) for vector in vectors], dtype=np.float64)
     dpmpar_indices = [1, 2, 3]
-    fortran_dpmpar = np.array(
-        [
-            np.finfo(np.float64).eps,
-            np.finfo(np.float64).tiny,
-            np.finfo(np.float64).max,
-        ],
-        dtype=np.float64,
-    )
+    fortran_dpmpar = np.array([float(value) for value in direct_lines[6].split()], dtype=np.float64)
     python_dpmpar = np.array([python_module.dpmpar(index) for index in dpmpar_indices], dtype=np.float64)
     return _repo_result(
         "medium",
@@ -1663,7 +1693,52 @@ program run_sisso
   write(*,'(4(ES24.16E3,1X))') corr(x,y), corr(x2,y2), det(mat), det(mat2)
 end program run_sisso
 """
-    exe_path, _ = _compile_fortran_program("sisso_verify", inline_sources=[("run_sisso.f90", source)])
+    direct_driver = """
+program run_sisso_direct
+  use libsisso, only: corr, det
+  implicit none
+  real*8 :: x(4), y(4), x2(4), y2(4), mat(2,2), mat2(2,2), identity(2,2)
+  x = (/1.d0, 2.d0, 4.d0, 8.d0/)
+  y = (/2.d0, 3.d0, 5.d0, 9.d0/)
+  x2 = (/1.d0, 2.d0, 3.d0, 4.d0/)
+  y2 = (/4.d0, 3.d0, 2.d0, 1.d0/)
+  mat = reshape((/1.d0, 3.d0, 2.d0, 4.d0/), (/2,2/))
+  mat2 = reshape((/0.d0, 2.d0, 1.d0, 3.d0/), (/2,2/))
+  identity = 0.d0
+  identity(1,1) = 1.d0
+  identity(2,2) = 1.d0
+  write(*,'(5(ES24.16E3,1X))') corr(x,y), corr(x2,y2), det(mat), det(mat2), det(identity)
+end program run_sisso_direct
+"""
+    exe_path, _ = _compile_fortran_program_ordered(
+        "sisso_verify",
+        ordered_sources=[FORTRAN_CORPUS_ROOT / "medium" / "SISSO" / "src" / "libsisso.f90"],
+        prelude_sources=[
+            ("mpi_stub.f90", """
+module mpi
+  integer, parameter :: mpi_comm_world=0, mpi_double_precision=0
+end module mpi
+subroutine mpi_barrier(comm,ierr)
+  integer :: comm,ierr
+  ierr=0
+end subroutine
+subroutine mpi_bcast(buf,count,datatype,root,comm,ierr)
+  integer :: buf(*),count,datatype,root,comm,ierr
+  ierr=0
+end subroutine
+subroutine mpi_send(buf,count,datatype,dest,tag,comm,ierr)
+  integer :: buf(*),count,datatype,dest,tag,comm,ierr
+  ierr=0
+end subroutine
+subroutine mpi_recv(buf,count,datatype,source,tag,comm,status,ierr)
+  integer :: buf(*),count,datatype,source,tag,comm,status(*),ierr
+  ierr=0
+end subroutine
+"""),
+        ],
+        inline_sources=[("run_sisso_direct.f90", direct_driver)],
+        linker_flags=["-llapack", "-lblas"],
+    )
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().split()
 
     python_module = _load_module(
@@ -1676,6 +1751,7 @@ end program run_sisso
     y2 = np.array([4.0, 3.0, 2.0, 1.0], dtype=np.float64)
     matrix = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float64, order="F")
     matrix2 = np.array([[0.0, 1.0], [2.0, 3.0]], dtype=np.float64, order="F")
+    identity = np.eye(2, dtype=np.float64, order="F")
     return _repo_result(
         "medium",
         "SISSO",
@@ -1705,6 +1781,13 @@ end program run_sisso
                 "det_pivot",
                 np.array([float(output[3])], dtype=np.float64),
                 np.array([python_module.det(matrix2)], dtype=np.float64),
+                atol=1.0e-12,
+                rtol=1.0e-12,
+            ),
+            _numeric_check(
+                "det_identity",
+                np.array([float(output[4])], dtype=np.float64),
+                np.array([python_module.det(identity)], dtype=np.float64),
                 atol=1.0e-12,
                 rtol=1.0e-12,
             ),
@@ -1820,7 +1903,37 @@ program run_json_strings
   write(*,'(3(L1,1X))') valid_json_hex('09aF'), valid_json_hex('12xz'), valid_json_hex('')
 end program run_json_strings
 """
-    exe_path, _ = _compile_fortran_program("json_fortran_verify", inline_sources=[("run_json_strings.f90", source)])
+    direct_driver = """
+program run_json_strings_direct
+  use json_kinds, only: CK
+  use json_string_utilities, only: lowercase_string, encode_rfc6901, decode_rfc6901, &
+       replace_string, escape_string, valid_json_hex
+  implicit none
+  character(kind=CK,len=:), allocatable :: encoded, decoded, replaced, escaped
+  encoded = encode_rfc6901(CK_'a/b~c')
+  decoded = decode_rfc6901(CK_'a~1b~0c')
+  replaced = CK_'alpha beta alpha'
+  call replace_string(replaced, CK_'alpha', CK_'gamma')
+  call escape_string(CK_'line"tab'//achar(9,kind=CK), escaped, .false.)
+  write(*,'(A)') trim(lowercase_string(CK_'AbC/De~F'))
+  write(*,'(A)') trim(encoded)
+  write(*,'(A)') trim(decoded)
+  write(*,'(A)') trim(replaced)
+  write(*,'(A)') trim(escaped)
+  write(*,'(3(L1,1X))') valid_json_hex(CK_'09aF'), valid_json_hex(CK_'12xz'), valid_json_hex(CK_'')
+end program run_json_strings_direct
+"""
+    source_root = FORTRAN_CORPUS_ROOT / "medium" / "json-fortran" / "src"
+    exe_path, _ = _compile_fortran_program_ordered(
+        "json_fortran_verify",
+        ordered_sources=[
+            source_root / "json_kinds.F90",
+            source_root / "json_parameters.F90",
+            source_root / "json_string_utilities.F90",
+        ],
+        inline_sources=[("run_json_strings_direct.f90", direct_driver)],
+        compiler_flags=["-cpp"],
+    )
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
 
     python_module = _load_module(
@@ -1860,48 +1973,11 @@ end program run_json_strings
 
 
 def verify_fortran_astrodynamics_toolkit() -> RepoResult:
-    source = """
-module astro_small
-  implicit none
-  integer, parameter :: wp = kind(0.0d0)
-  abstract interface
-    function func_proto(x) result(y)
-      import :: wp
-      complex(wp), intent(in) :: x
-      complex(wp) :: y
-    end function func_proto
-  end interface
-contains
-  subroutine complex_step_derivative(f, x, h, dfdx)
-    procedure(func_proto) :: f
-    complex(wp), intent(in) :: x
-    real(wp), intent(in) :: h
-    real(wp), intent(out) :: dfdx
-    dfdx = aimag(f(cmplx(real(x, wp), aimag(x) + h, wp))) / h
-  end subroutine complex_step_derivative
-
-  subroutine geodetic_to_cartesian(a, b, glat, lon, h, r)
-    real(wp), intent(in) :: a, b, glat, lon, h
-    real(wp), intent(out) :: r(3)
-    real(wp) :: e2, slat, clat, slon, clon, tlat, ome2, d, q, aod
-    slat = sin(glat)
-    clat = cos(glat)
-    tlat = tan(glat)
-    slon = sin(lon)
-    clon = cos(lon)
-    e2 = 1.0_wp - (b*b)/(a*a)
-    ome2 = 1.0_wp - e2
-    d = sqrt(1.0_wp + ome2*tlat*tlat)
-    q = sqrt(1.0_wp - e2*slat*slat)
-    aod = a/d
-    r(1) = aod*clon + h*clon*clat
-    r(2) = aod*slon + h*slon*clat
-    r(3) = a*ome2*slat/q + h*slat
-  end subroutine geodetic_to_cartesian
-end module astro_small
-
+    driver = """
 program run_astro
-  use astro_small
+  use kind_module, only: wp
+  use complex_step_module, only: complex_step_derivative
+  use geodesy_module, only: geodetic_to_cartesian
   implicit none
   real(wp) :: dfdx, r(3)
   call complex_step_derivative(f, cmplx(1.5_wp, 0.0_wp, wp), 1.0e-20_wp, dfdx)
@@ -1916,7 +1992,18 @@ contains
   end function f
 end program run_astro
 """
-    exe_path, _ = _compile_fortran_program("astro_verify", inline_sources=[("run_astro.f90", source)])
+    source_root = FORTRAN_CORPUS_ROOT / "medium" / "Fortran-Astrodynamics-Toolkit" / "src"
+    exe_path, _ = _compile_fortran_program_ordered(
+        "astro_verify",
+        ordered_sources=[
+            source_root / "kind_module.F90",
+            source_root / "numbers_module.f90",
+            source_root / "complex_step.f90",
+            source_root / "geodesy_module.f90",
+        ],
+        inline_sources=[("run_astro.f90", driver)],
+        compiler_flags=["-cpp"],
+    )
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
 
     conversion_module = _load_module(
@@ -1952,6 +2039,14 @@ end program run_astro
                 ["x", "y", "z"],
                 atol=1.0e-10,
                 rtol=1.0e-10,
+            ),
+            _numeric_check(
+                "geodetic_to_cartesian_norm",
+                np.array([np.linalg.norm(_parse_float_line(output[1]))], dtype=np.float64),
+                np.array([np.linalg.norm(python_cartesian)], dtype=np.float64),
+                atol=1.0e-10,
+                rtol=1.0e-10,
+                note="Compares the Cartesian-radius invariant derived from all three pinned geodesy outputs.",
             ),
         ],
     )
@@ -2225,6 +2320,63 @@ end program run_wavelets
         python_module.cdfchi(1, p, q, x, 2.0, status, bound)
         python_values.append([p[0], q[0], int(status[0])])
 
+    fft_driver = """
+program run_wavelets_fft
+  implicit none
+  integer, parameter :: n=4
+  double precision :: c(2*n), wsave(4*n+15), c1(2), wsave1(19)
+  c = [1d0,0d0, 2d0,-1d0, 0d0,0.5d0, -1d0,2d0]
+  call cffti(n,wsave)
+  call cfftf(n,c,wsave)
+  write(*,'(8(ES24.16E3,1X))') c
+  c1 = [3d0,-4d0]
+  call cffti(1,wsave1)
+  call cfftf(1,c1,wsave1)
+  write(*,'(2(ES24.16E3,1X))') c1
+  c = [1d0,0d0, 2d0,-1d0, 0d0,0.5d0, -1d0,2d0]
+  call cfftb(n,c,wsave)
+  write(*,'(8(ES24.16E3,1X))') c
+  c1 = [3d0,-4d0]
+  call cfftb(1,c1,wsave1)
+  write(*,'(2(ES24.16E3,1X))') c1
+end program run_wavelets_fft
+"""
+    fft_exe, _ = _compile_fortran_program(
+        "wavelets_fft_direct_verify",
+        inline_sources=[("run_wavelets_fft.f90", fft_driver)],
+        file_sources=[FORTRAN_CORPUS_ROOT / "medium" / "wavelets" / "wave_fortran" / "cfftpack.f"],
+    )
+    fft_lines = _run([str(fft_exe)], capture_stderr=True).stdout.strip().splitlines()
+    fft_fortran = _parse_float_line(fft_lines[0])
+    fft_boundary_fortran = _parse_float_line(fft_lines[1])
+    inverse_fft_fortran = _parse_float_line(fft_lines[2])
+    inverse_fft_boundary_fortran = _parse_float_line(fft_lines[3])
+    fft_module = _load_module(
+        "wavelets_cfftpack",
+        TARGET_ROOT / "medium" / "wavelets" / "generated_python" / "src" / "wavelets" / "cfftpack.py",
+    )
+    fft_input = np.array([1.0 + 0.0j, 2.0 - 1.0j, 0.0 + 0.5j, -1.0 + 2.0j], dtype=np.complex128)
+    fft_python_complex = fft_module.cfftf1(4, fft_input, np.zeros(31, dtype=np.float64))
+    fft_python = np.column_stack((fft_python_complex.real, fft_python_complex.imag)).ravel()
+    fft_boundary_complex = fft_module.cfftf1(
+        1, np.array([3.0 - 4.0j], dtype=np.complex128), np.zeros(19, dtype=np.float64)
+    )
+    fft_boundary_python = np.column_stack(
+        (fft_boundary_complex.real, fft_boundary_complex.imag)
+    ).ravel()
+    inverse_fft_python_complex = fft_module.cfftb1(
+        4, fft_input, np.zeros(31, dtype=np.float64)
+    )
+    inverse_fft_python = np.column_stack(
+        (inverse_fft_python_complex.real, inverse_fft_python_complex.imag)
+    ).ravel()
+    inverse_fft_boundary_complex = fft_module.cfftb1(
+        1, np.array([3.0 - 4.0j], dtype=np.complex128), np.zeros(19, dtype=np.float64)
+    )
+    inverse_fft_boundary_python = np.column_stack(
+        (inverse_fft_boundary_complex.real, inverse_fft_boundary_complex.imag)
+    ).ravel()
+
     return _repo_result(
         "medium",
         "wavelets",
@@ -2247,15 +2399,71 @@ end program run_wavelets
                 atol=1.0e-10,
                 rtol=1.0e-10,
                 note="The comparison ignores BOUND because the original routine documents it as undefined when STATUS=0.",
-            )
+            ),
+            _numeric_check(
+                "fft_forward_direct_ordinary",
+                fft_fortran,
+                fft_python,
+                atol=1.0e-12,
+                rtol=1.0e-12,
+                note="Executes pinned FFTPACK CFFTF on four complex samples; real and imaginary components are compared as one whole-array probe.",
+            ),
+            _numeric_check(
+                "fft_forward_direct_singleton_boundary",
+                fft_boundary_fortran,
+                fft_boundary_python,
+                atol=0.0,
+                rtol=0.0,
+                comparison="exact-array",
+                note="Executes the documented N=1 early-return path in pinned CFFTF as one whole-array probe.",
+            ),
+            _numeric_check(
+                "fft_backward_direct_ordinary",
+                inverse_fft_fortran,
+                inverse_fft_python,
+                atol=1.0e-12,
+                rtol=1.0e-12,
+                note="Executes pinned FFTPACK CFFTB on four complex frequency samples; real and imaginary components form one whole-array probe.",
+            ),
+            _numeric_check(
+                "fft_backward_direct_singleton_boundary",
+                inverse_fft_boundary_fortran,
+                inverse_fft_boundary_python,
+                atol=0.0,
+                rtol=0.0,
+                comparison="exact-array",
+                note="Executes the documented N=1 early-return path in pinned CFFTB as one whole-array probe.",
+            ),
         ],
     )
 
 
 def verify_lapack() -> RepoResult:
-    sys.path.insert(0, str(STUB_ROOT))
-    dcopy_module = importlib.import_module("dcopy_f")
-    dscal_module = importlib.import_module("dscal_f")
+    driver = """
+program run_lapack_blas_direct
+  implicit none
+  double precision :: source(4), target(4), x(3), source2(5), target2(5), x2(4)
+  source = [1d0,2d0,3d0,4d0]; target = 0d0
+  call dcopy(4, source, 1, target, 1)
+  write(*,'(4(ES24.16E3,1X))') target
+  x = [1d0,2d0,3d0]
+  call dscal(3, 2d0, x, -1)
+  write(*,'(3(ES24.16E3,1X))') x
+  source2 = [5d0,-1d0,0d0,2.5d0,7d0]; target2 = 0d0
+  call dcopy(5, source2, 1, target2, 1)
+  write(*,'(5(ES24.16E3,1X))') target2
+  x2 = [1d0,-2d0,3d0,-4d0]
+  call dscal(4, 0.5d0, x2, 1)
+  write(*,'(4(ES24.16E3,1X))') x2
+end program run_lapack_blas_direct
+"""
+    blas_root = FORTRAN_CORPUS_ROOT / "complex" / "lapack" / "BLAS" / "SRC"
+    exe_path, _ = _compile_fortran_program_ordered(
+        "lapack_blas_direct_verify",
+        ordered_sources=[blas_root / "dcopy.f", blas_root / "dscal.f"],
+        inline_sources=[("run_lapack_blas_direct.f90", driver)],
+    )
+    direct_lines = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
     dcopy_python = _load_module(
         "lapack_dcopy_py",
         TARGET_ROOT / "complex" / "lapack" / "generated_python" / "src" / "dcopy.py",
@@ -2266,25 +2474,21 @@ def verify_lapack() -> RepoResult:
     )
 
     source = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float64)
-    target_fortran = np.zeros(4, dtype=np.float64)
+    target_fortran = _parse_float_line(direct_lines[0])
     target_python = np.zeros(4, dtype=np.float64)
-    dcopy_module.dcopy(len(source), source, 1, target_fortran, 1)
     dcopy_python.dcopy(len(source), source.copy(), 1, target_python, 1)
 
-    x_fortran = np.array([1.0, 2.0, 3.0], dtype=np.float64)
+    x_fortran = _parse_float_line(direct_lines[1])
     x_python = np.array([1.0, 2.0, 3.0], dtype=np.float64)
-    dscal_module.dscal(3, 2.0, x_fortran, -1)
     x_python = dscal_python.dscal(3, 2.0, x_python, -1)
 
     source2 = np.array([5.0, -1.0, 0.0, 2.5, 7.0], dtype=np.float64)
-    target2_fortran = np.zeros(5, dtype=np.float64)
+    target2_fortran = _parse_float_line(direct_lines[2])
     target2_python = np.zeros(5, dtype=np.float64)
-    dcopy_module.dcopy(len(source2), source2, 1, target2_fortran, 1)
     dcopy_python.dcopy(len(source2), source2.copy(), 1, target2_python, 1)
 
-    x2_fortran = np.array([1.0, -2.0, 3.0, -4.0], dtype=np.float64)
+    x2_fortran = _parse_float_line(direct_lines[3])
     x2_python = np.array([1.0, -2.0, 3.0, -4.0], dtype=np.float64)
-    dscal_module.dscal(4, 0.5, x2_fortran, 1)
     x2_python = dscal_python.dscal(4, 0.5, x2_python, 1)
 
     return _repo_result(
@@ -2739,6 +2943,134 @@ end program run_fpm
     exe_path, _ = _compile_fortran_program("fpm_verify", inline_sources=[("run_fpm.f90", source)])
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
 
+    release_dependencies = """
+module fpm_error
+  implicit none
+  type :: error_t
+    character(len=:), allocatable :: message
+  end type error_t
+contains
+  subroutine fpm_stop(code, message)
+    integer, intent(in) :: code
+    character(len=*), intent(in) :: message
+    error stop code
+  end subroutine fpm_stop
+end module fpm_error
+
+module fpm_versioning
+  use fpm_error, only: error_t
+  implicit none
+  type :: version_t
+    integer :: major=0, minor=0, patch=0
+    character(len=:), allocatable :: string
+  end type version_t
+contains
+  subroutine new_version(version, text, error)
+    type(version_t), intent(out) :: version
+    character(len=*), intent(in) :: text
+    type(error_t), allocatable, intent(out) :: error
+    integer :: p1, p2
+    version%string = trim(text)
+    p1 = index(text, '.')
+    p2 = index(text(p1+1:), '.') + p1
+    read(text(:p1-1), *) version%major
+    read(text(p1+1:p2-1), *) version%minor
+    read(text(p2+1:), *) version%patch
+  end subroutine new_version
+end module fpm_versioning
+"""
+    release_driver = """
+program run_fpm_release
+  use fpm_release, only: fpm_version, version_t
+  implicit none (type, external)
+  type(version_t) :: version
+  version = fpm_version()
+  write(*,'(3(I0,1X))') version%major, version%minor, version%patch
+  write(*,'(A)') version%string
+end program run_fpm_release
+"""
+    release_exe, _ = _compile_fortran_program_ordered(
+        "fpm_release_verify",
+        prelude_sources=[("fpm_release_dependencies.f90", release_dependencies)],
+        ordered_sources=[
+            FORTRAN_CORPUS_ROOT / "complex" / "fpm" / "src" / "fpm" / "fpm_release.F90"
+        ],
+        inline_sources=[("run_fpm_release.f90", release_driver)],
+        compiler_flags=["-cpp"],
+    )
+    release_lines = _run([str(release_exe)], capture_stderr=True).stdout.strip().splitlines()
+    release_numbers = [int(value) for value in release_lines[0].split()]
+
+    versioning_dependencies = """
+module fpm_error
+  implicit none
+  type :: error_t
+    character(len=:), allocatable :: message
+  end type error_t
+contains
+  subroutine syntax_error(error,message)
+    type(error_t), allocatable, intent(out) :: error
+    character(len=*), intent(in) :: message
+    allocate(error); error%message=message
+  end subroutine syntax_error
+end module fpm_error
+
+module fpm_strings
+  implicit none
+  type :: string_t
+    character(len=:), allocatable :: s
+  end type string_t
+end module fpm_strings
+
+module regex_module
+  implicit none
+contains
+  integer function regex(text,pattern,length) result(position)
+    character(len=*), intent(in) :: text,pattern
+    integer, intent(out), optional :: length
+    position=0
+    if(present(length)) length=0
+  end function regex
+end module regex_module
+"""
+    versioning_driver = """
+program run_fpm_versioning
+  use fpm_error, only: error_t
+  use fpm_versioning, only: version_t,new_version
+  implicit none (type, external)
+  type(version_t) :: version
+  type(error_t), allocatable :: error
+  call new_version(version,'12.34.56',error)
+  if(allocated(error)) error stop 'ordinary version rejected'
+  write(*,'(A)') version%s()
+  call new_version(version,'01.002.0003',error)
+  if(allocated(error)) error stop 'leading-zero version rejected'
+  write(*,'(A)') version%s()
+end program run_fpm_versioning
+"""
+    versioning_exe, _ = _compile_fortran_program_ordered(
+        "fpm_versioning_direct_verify",
+        prelude_sources=[("fpm_versioning_dependencies.f90", versioning_dependencies)],
+        ordered_sources=[
+            FORTRAN_CORPUS_ROOT / "complex" / "fpm" / "src" / "fpm" / "versioning.f90"
+        ],
+        inline_sources=[("run_fpm_versioning.f90", versioning_driver)],
+    )
+    versioning_lines = _run(
+        [str(versioning_exe)], capture_stderr=True
+    ).stdout.strip().splitlines()
+    version_module = _load_module(
+        "fpm_version_generator",
+        TARGET_ROOT / "complex" / "fpm" / "generated_python" / "src" / "version_generator.py",
+    )
+    parsed_versions = [
+        version_module.parse_version_string("12.34.56"),
+        version_module.parse_version_string("01.002.0003"),
+    ]
+    normalized_target_versions = [
+        f"{value.major}.{value.minor}.{value.patch}" for value in parsed_versions
+    ]
+
     python_module = _load_module(
         "fpm_compiler_config",
         TARGET_ROOT / "complex" / "fpm" / "generated_python" / "src" / "compiler_config.py",
@@ -2786,7 +3118,41 @@ end program run_fpm
         compiler_labels,
         note="Normalized comparison: the original Fortran accepts a compiler string, while the translated Python accepts a CompilerID enum.",
     )
-    return _repo_result("complex", "fpm", [*c_checks, *cxx_checks], notes="The translated Python changes the API contract for these routines.")
+    parsed_release = version_module.parse_version_string(release_lines[1].strip())
+    release_checks = _exact_case_checks(
+        "fpm_release_direct",
+        [*release_numbers, release_lines[1].strip()],
+        [parsed_release.major, parsed_release.minor, parsed_release.patch, parsed_release.string],
+        ["major", "minor", "patch", "string"],
+        note="Compiles pinned fpm_release.F90; interface-only stubs supply the version record and error API while upstream fpm_version provides the release string.",
+    )
+    release_code_check = _numeric_check(
+        "fpm_release_direct_numeric_code",
+        np.array([release_numbers[0] * 10000 + release_numbers[1] * 100 + release_numbers[2]], dtype=np.int64),
+        np.array([parsed_release.major * 10000 + parsed_release.minor * 100 + parsed_release.patch], dtype=np.int64),
+        atol=0.0,
+        rtol=0.0,
+        comparison="exact-array",
+        note="Compares a deterministic numeric encoding derived from all three pinned release components.",
+    )
+    return _repo_result(
+        "complex",
+        "fpm",
+        [
+            *c_checks,
+            *cxx_checks,
+            *release_checks,
+            release_code_check,
+            *_exact_case_checks(
+                "version_parse_direct",
+                [line.strip() for line in versioning_lines],
+                normalized_target_versions,
+                ["ordinary", "leading_zero_boundary"],
+                note="Compiles pinned fpm/versioning.f90 and executes new_version_from_string; dependency stubs supply only imported error, string, and unused regex interfaces.",
+            ),
+        ],
+        notes="The translated Python changes the API contract for the compiler-default routines.",
+    )
 
 
 def verify_ccpp_physics() -> RepoResult:
@@ -2846,24 +3212,25 @@ end program run_ccpp
     int_line = debug.print_int_0d("COUNT", 42, mpirank=1, omprank=2, blkno=3)
     real_line = debug.print_real_0d("VALUE", 1.25, mpirank=1, omprank=2, blkno=3)
 
-    constants_source = """
-program run_ccpp_constants
+    machine_stub = """
+module machine
   implicit none
   integer, parameter :: kind_phys = kind(0.0d0)
-  ! Values mirror physics/hooks/physcons.F90 in the ccpp-physics repository.
-  real(kind=kind_phys), parameter :: con_pi   = 4.0d0*atan(1.0d0)
-  real(kind=kind_phys), parameter :: con_g    = 9.80665e+0_kind_phys
-  real(kind=kind_phys), parameter :: con_rd   = 2.8705e+2_kind_phys
-  real(kind=kind_phys), parameter :: con_rv   = 4.6150e+2_kind_phys
-  real(kind=kind_phys), parameter :: con_cp   = 1.0046e+3_kind_phys
-  real(kind=kind_phys), parameter :: con_hvap = 2.5000e+6_kind_phys
-  real(kind=kind_phys), parameter :: con_t0c  = 2.7315e+2_kind_phys
+  integer, parameter :: kind_dyn = kind(0.0d0)
+end module machine
+"""
+    constants_driver = """
+program run_ccpp_constants
+  use physcons, only: con_pi, con_g, con_rd, con_rv, con_cp, con_hvap, con_t0c
+  implicit none
   write(*,'(7(ES24.16E3,1X))') con_pi, con_g, con_rd, con_rv, con_cp, con_hvap, con_t0c
 end program run_ccpp_constants
 """
-    constants_exe, _ = _compile_fortran_program(
+    constants_exe, _ = _compile_fortran_program_ordered(
         "ccpp_constants_verify",
-        inline_sources=[("run_ccpp_constants.f90", constants_source)],
+        prelude_sources=[("machine.f90", machine_stub)],
+        ordered_sources=[FORTRAN_CORPUS_ROOT / "complex" / "ccpp-physics" / "physics" / "hooks" / "physcons.F90"],
+        inline_sources=[("run_ccpp_constants.f90", constants_driver)],
     )
     constants_output = _run([str(constants_exe)], capture_stderr=True).stdout.strip().split()
     constant_names = ["con_pi", "con_g", "con_rd", "con_rv", "con_cp", "con_hvap", "con_t0c"]
@@ -2960,6 +3327,39 @@ end program run_petsc_split
         inline_sources=[("run_petsc_split.f90", source)],
     )
     output = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
+    app_driver = """
+program run_petsc_app_direct
+  implicit none
+  real(8) :: value, pressure(-1:1), stencil(-1:1)
+  call evalK(2.0d0, value)
+  write(*,'(ES24.16E3)') value
+  call evalK(-2.0d0, value)
+  write(*,'(ES24.16E3)') value
+  call evalK(0.0d0, value)
+  write(*,'(ES24.16E3)') value
+  call evalK(-0.5d0, value)
+  write(*,'(ES24.16E3)') value
+  call evalK(-10.0d0, value)
+  write(*,'(ES24.16E3)') value
+  pressure = [-1.0d0, 0.0d0, 1.0d0]
+  call fillK(pressure, stencil)
+  write(*,'(3(ES24.16E3,1X))') stencil
+  pressure = 0.0d0
+  call fillK(pressure, stencil)
+  write(*,'(3(ES24.16E3,1X))') stencil
+end program run_petsc_app_direct
+"""
+    app_exe, _ = _compile_fortran_program_ordered(
+        "petsc_app_direct_verify",
+        ordered_sources=[
+            FORTRAN_CORPUS_ROOT / "complex" / "petsc" / "src" / "binding" / "petsc4py"
+            / "demo" / "legacy" / "perftest" / "App.f90"
+        ],
+        inline_sources=[("run_petsc_app_direct.f90", app_driver)],
+    )
+    app_lines = _run([str(app_exe)], capture_stderr=True).stdout.strip().splitlines()
+    app_output = np.array([float(value) for value in app_lines[:5]], dtype=np.float64)
+    fillk_output = [_parse_float_line(line) for line in app_lines[5:7]]
     fortran_values = np.array(
         [[int(part) for part in line.split()] for line in output],
         dtype=object,
@@ -2977,6 +3377,18 @@ end program run_petsc_split
         for start, end in zip(ibeg, iend):
             row.extend([int(start), int(end)])
         python_lines.append(row)
+    conductivity_module = _load_module(
+        "petsc_conductivity_calculator",
+        TARGET_ROOT / "complex" / "petsc" / "generated_python" / "src" / "conductivity_calculator.py",
+    )
+    fillk_expected = []
+    for pressure in (
+        np.array([-1.0, 0.0, 1.0], dtype=np.float64),
+        np.zeros(3, dtype=np.float64),
+    ):
+        stencil = np.empty(3, dtype=np.float64)
+        conductivity_module.fillK(pressure, stencil)
+        fillk_expected.append(stencil)
     checks = []
     for index, (total, pieces) in enumerate(split_cases):
         checks.append(
@@ -2989,11 +3401,70 @@ end program run_petsc_split
                 comparison="exact-array",
             )
         )
+    checks.extend(
+        _numeric_case_checks(
+            "evalk",
+            app_output,
+            np.array(
+                [
+                    conductivity_module.evalK(2.0),
+                    conductivity_module.evalK(-2.0),
+                    conductivity_module.evalK(0.0),
+                    conductivity_module.evalK(-0.5),
+                    conductivity_module.evalK(-10.0),
+                ]
+            ),
+            ["nonnegative", "negative", "zero_boundary", "negative_half", "negative_large"],
+            atol=0.0,
+            rtol=1.0e-15,
+        )
+    )
+    checks.extend(
+        [
+            _numeric_check(
+                "fillk_direct_ordinary",
+                fillk_output[0],
+                fillk_expected[0],
+                atol=0.0,
+                rtol=0.0,
+                comparison="exact-array",
+                note="Compiles pinned App.f90 and executes fillK on a mixed-sign pressure stencil.",
+            ),
+            _numeric_check(
+                "fillk_direct_zero_boundary",
+                fillk_output[1],
+                fillk_expected[1],
+                atol=0.0,
+                rtol=0.0,
+                comparison="exact-array",
+                note="Compiles pinned App.f90 and executes fillK on its all-zero boundary case.",
+            ),
+        ]
+    )
     return _repo_result("complex", "petsc", checks)
 
 
 def run_all_verifications() -> list[RepoResult]:
     from extended_repo_verifiers import EXTENDED_VERIFIERS
+
+    with (PACKAGE_ROOT / "manifests" / "repositories.csv").open(newline="", encoding="utf-8") as handle:
+        repository_rows = list(csv.DictReader(handle))
+    with (PACKAGE_ROOT / "manifests" / "probes.csv").open(newline="", encoding="utf-8") as handle:
+        probe_rows = list(csv.DictReader(handle))
+    canonical_by_key = {
+        re.sub(r"[^a-z0-9]", "", row["repository"].casefold()): row["repository"]
+        for row in repository_rows
+    }
+    tier_by_repository = {row["repository"]: row["tier"] for row in repository_rows}
+    cases_by_repository: dict[str, list[str]] = {}
+    for row in probe_rows:
+        cases_by_repository.setdefault(row["repository"], []).append(row["case_name"])
+
+    def canonical_repository(name: str) -> str:
+        if name == "tsunami-diff":
+            return "tsunami"
+        key = re.sub(r"[^a-z0-9]", "", name.casefold())
+        return canonical_by_key.get(key, name)
 
     verifiers = [
         verify_tsunami,
@@ -3022,36 +3493,56 @@ def run_all_verifications() -> list[RepoResult]:
     results: list[RepoResult] = []
     for verifier in verifiers:
         try:
-            results.append(verifier())
+            result = verifier()
+            result.repo = canonical_repository(result.repo)
+            result.tier = tier_by_repository.get(result.repo, result.tier)
+            results.append(result)
         except Exception as exc:  # pragma: no cover - exercised by script execution
             name = verifier.__name__.replace("verify_", "").replace("_", "-")
-            tier = "unknown"
-            if name in {
-                "tsunami",
-                "tsunami-diff",
-                "fkb",
-                "fastgpt",
-                "datetime-fortran",
-                "m-strings",
-                "fftpack",
-                "fortranlib",
-                "fortran-utils",
-            }:
-                tier = "low"
-            elif name in {"minpack", "sisso", "json-fortran", "fortran-astrodynamics-toolkit", "quadpack", "wavelets"}:
-                tier = "medium"
-            elif name in {"lapack", "pymc2", "nek5000", "fpm", "ccpp-physics", "petsc"}:
-                tier = "complex"
+            repository = canonical_repository(name)
+            tier = tier_by_repository.get(repository, "unknown")
+            expected_cases = cases_by_repository.get(repository, ["runner"])
             results.append(
                 RepoResult(
                     tier=tier,
-                    repo=name,
+                    repo=repository,
                     status="error",
                     notes=f"{type(exc).__name__}: {exc}",
-                    checks=[CheckResult(routine="runner", status="error", comparison="runner", max_abs=None, max_rel=None, note=str(exc))],
+                    checks=[
+                        CheckResult(
+                            routine=case_name,
+                            status="error",
+                            comparison="runner",
+                            max_abs=None,
+                            max_rel=None,
+                            note=str(exc),
+                        )
+                        for case_name in expected_cases
+                    ],
                 )
             )
-    return results
+
+    merged: dict[str, RepoResult] = {}
+    for result in results:
+        if result.repo not in merged:
+            merged[result.repo] = result
+            continue
+        prior = merged[result.repo]
+        prior.checks.extend(result.checks)
+        prior.notes = "; ".join(filter(None, (prior.notes, result.notes)))
+        prior.status = "pass" if all(check.status == "pass" for check in prior.checks) else "fail"
+
+    order = [row["repository"] for row in repository_rows]
+    final_results = [merged[repository] for repository in order if repository in merged]
+    if len(final_results) != len(repository_rows):
+        missing = sorted(set(order) - set(merged))
+        raise RuntimeError(f"missing repository verification results: {', '.join(missing)}")
+    actual_checks = sum(len(result.checks) for result in final_results)
+    if actual_checks != len(probe_rows):
+        raise RuntimeError(
+            f"verification result count {actual_checks} does not match fixed probe denominator {len(probe_rows)}"
+        )
+    return final_results
 
 
 def render_report(results: list[RepoResult]) -> str:

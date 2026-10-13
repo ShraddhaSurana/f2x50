@@ -81,7 +81,7 @@ def build(input_path: Path, output_path: Path) -> None:
     output_rows.sort(key=lambda item: (item["tier"], item["repository"].casefold(), item["probe_id"]))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=FIELDS)
+        writer = csv.DictWriter(handle, fieldnames=FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(output_rows)
 

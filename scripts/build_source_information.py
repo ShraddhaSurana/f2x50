@@ -33,34 +33,39 @@ FIELDS = (
     "audit_note",
 )
 
-# These cases execute checked-in f2py sources rather than compiling the pinned
-# source file directly. The upstream locator still identifies the originating
-# routine when a unique match is available.
-F2PY_CASE_PREFIXES = {
-    "tsunami": ("num_tiles", "tile_indices_1d"),
-    "lapack": ("dcopy", "dscal"),
-    "minpack": ("enorm",),
-}
+# Version 0.2's former f2py-backed cases now compile the pinned source files
+# with standalone drivers. Keep the category available for future additions,
+# but do not assign it to any current probe.
+F2PY_CASE_PREFIXES: dict[str, tuple[str, ...]] = {}
 
 # These cases compile the pinned upstream routine with only a small driver.
 # This override is needed when the routine is reached through an include file
 # (QUADPACK) or when the verifier compiles a list assembled in Python.
 ORIGINAL_CASE_PREFIXES = {
+    "arpack-ng": ("compute_residual_norm",),
+    "ccpp-physics": ("physical_constants",),
     "fftpack": ("zfftf", "zfftb"),
+    "hdf5": (
+        "get_numpy_dtype_itemsize_int",
+        "get_numpy_dtype_itemsize_double",
+        "get_numpy_dtype_itemsize_float",
+    ),
+    "IO-Fortran-Library": ("parse_source_files_line_count",),
+    "minpack": ("dpmpar",),
     "quadpack": ("dqk15", "dqk21"),
+    "coretran": ("process_strings_parse", "count_entries_direct"),
+    "MPM3D-F90": ("dynamic_relaxation_damping_direct",),
+    "neural-fortran": ("split_attention_heads_direct",),
+    "WPS": ("parse_wps_config_direct", "config_table_path_direct"),
+    "xtb": ("symbol_to_number_direct",),
 }
 
 # These expectations are deliberately synthetic contracts, not extracted
 # upstream procedures. They remain useful, but must not be called compiled
 # source oracles in the metadata.
 SYNTHETIC_CASE_PREFIXES = {
-    "atomsk": ("xyz_serializer",),
-    "arpack-ng": ("compute_residual_norm",),
-    "dftd4": ("get_rational_damping",),
-    "forpy": ("analyze_fortran", "get_probe_value"),
-    "hdf5": ("get_numpy_dtype_itemsize",),
-    "IO-Fortran-Library": ("parse_source_files_line_count",),
-    "minpack": ("dpmpar",),
+    "forpy": ("analyze_fortran",),
+    "hdf5": ("get_numpy_dtype_itemsize_char", "get_numpy_dtype_itemsize_extended"),
     "MPM3D-F90": ("integrate_momentum",),
     "neural-fortran": ("quadratic",),
     "WPS": ("interpolate_met_fields",),
@@ -69,25 +74,71 @@ SYNTHETIC_CASE_PREFIXES = {
 # Case labels include input/output suffixes. Most map by longest procedure-name
 # prefix; these aliases cover known public API spelling differences.
 SYMBOL_ALIASES = {
+    ("ABAQUS", "dload_moving_pressure"): "dload",
+    ("ABAQUS", "uel_bodyforce_direct"): "uel",
+    ("arpack-ng", "compute_residual_norm"): "pdnorm2",
+    ("arpack-ng", "convergence_dsconv_direct"): "dsconv",
+    ("atomsk", "xyz_serializer"): "write_xyz",
+    ("atomsk", "atomic_species_direct"): "atomspecies",
+    ("bspline-fortran", "compute_basis_functions"): "db1val_default",
+    ("bspline-fortran", "compute_coefficients_db1ink_direct"): "db1ink_default",
     ("crest", "symbol_to_atomic_number"): "e2i",
+    ("crest", "read_xyz_rdxmol_direct"): "rdxmol",
     ("dftd4", "get_rational_damping"): "get_rational_damping_name",
+    ("elmerfem", "gauss_quadrature_triangle_direct"): "gausspointstriangle",
+    ("elmerfem", "gauss_quadrature_1d_assembly_direct"): "gausspoints1d",
     ("fortran2018-examples", "assert_close"): "isclose_64",
+    ("fortran2018-examples", "assert_close_single_precision_direct"): "isclose_32",
     ("fortranlib", "access_exists_dir_as_dir"): "dir_exists",
     ("fortranlib", "access_exists_file_as_dir"): "dir_exists",
     ("fortranlib", "access_exists_dir_as_file"): "file_exists",
     ("fortranlib", "access_exists_file_as_file"): "file_exists",
+    ("fortranlib", "access_exists_missing_file"): "file_exists",
     ("functional-fortran", "arange"): "arange_r8",
     ("functional-fortran", "reverse_operation"): "reverse_r8",
+    ("FOODIE", "integrator_scheme_support_direct"): "is_supported",
+    ("fpm", "fpm_release_direct"): "fpm_version",
+    ("fpm", "version_parse_direct"): "new_version_from_string",
+    ("IO-Fortran-Library", "parse_source_files_line_count"): "read_file",
+    ("Incompact3d", "compute_spatial_derivatives"): "derx_00",
+    ("Incompact3d", "compute_spatial_derivatives_derx11_direct"): "derx_11",
     ("M_strings", "string_to_value_int32"): "a2i",
+    ("M_strings", "atoi_int64_direct"): "atoi_int64",
+    ("openfast", "interpolate_1d"): "interpbinreal",
+    ("openfast", "disk_velocity_mean_direct"): "mean",
+    ("MPM3D-F90", "init_particle_velocity_direct"): "initparticle",
+    ("MPM3D-F90", "dynamic_relaxation_damping_direct"): "dynamicrelaxationdamping",
     ("roots-fortran", "bisection_method"): "bisection",
     ("roots-fortran", "root_scalar_methods"): "root_scalar_by_name",
     ("M_time", "demo_sec2days_duration"): "sec2days",
-    ("Cmathtuts", "execute_blas_level3_operations_gemm"): "dgemm",
+    ("M_time", "iso_week_d2w_direct"): "d2w",
+    ("packmol", "jacobi_eigen"): "jacobi",
+    ("packmol", "periodic_wrap_v_in_box_direct"): "v_in_box",
+    ("stdlib", "radix_sort_direct_u16_min"): "radix_sort_u16_helper",
+    ("stdlib", "radix_sort_direct_u32_max"): "radix_sort_u32_helper",
+    ("stdlib", "radix_sort_direct_u16_median"): "radix_sort_u16_helper",
+    ("stdlib", "radix_sort_direct_u16_max"): "radix_sort_u16_helper",
+    ("stdlib", "radix_sort_direct_u32_min"): "radix_sort_u32_helper",
+    ("toml-f", "datetime_roundtrip"): "new_datetime_from_string",
+    ("toml-f", "datetime_compare_direct"): "compare_datetime",
+    ("neural-fortran", "split_attention_heads_direct"): "split_heads",
+    ("neural-fortran", "combine_attention_heads_direct"): "combine_heads",
+    ("xtb", "chemical_element_symbol"): "tosymbol",
+    ("xtb", "chemical_element_symbol_carbon"): "tosymbol",
+    ("xtb", "chemical_element_symbol_unknown"): "tosymbol",
+    ("xtb", "symbol_to_number_direct"): "tonumber",
+    ("WPS", "parse_wps_config_direct"): "despace",
+    ("WPS", "config_table_path_direct"): "get_path",
+    ("wavelets", "fft_forward_direct"): "cfftf",
+    ("wavelets", "fft_backward_direct"): "cfftb",
+    ("Cmathtuts", "execute_blas_level3_operations_gemm"): "matrix_multiply",
     ("Nek5000", "dnrm2_scaled"): "dnrm2",
     ("cp2k", "kahan_sum"): "kahan_sum_d1",
     ("cp2k", "kahan_extra_sum"): "kahan_sum_d1",
     ("cp2k", "kahan_dot"): "kahan_dot_product_d1",
     ("cp2k", "kahan_extra_dot"): "kahan_dot_product_d1",
+    ("coretran", "process_strings_parse"): "compact",
+    ("coretran", "count_entries_direct"): "countentries",
 }
 
 # Some pinned repositories contain generated documentation copies, tutorial
@@ -113,6 +164,122 @@ class Procedure:
     start: int
     end: int
     normalized: str
+
+
+# Explicit source locators for compiled module parameters. These are not
+# procedures, so the general procedure index cannot discover them, but their
+# values are read by drivers that compile the exact pinned files.
+LOCATOR_OVERRIDES = {
+    # These drivers deliberately choose one of several duplicate/generated
+    # source copies in the pinned repositories.  Record the exact file that is
+    # compiled instead of leaving the provenance audit ambiguous.
+    ("arpack-ng", "compute_residual_norm"): Procedure(
+        "PARPACK/SRC/MPI/pdnorm2.f", "pdnorm2", 20, 89, ""
+    ),
+    ("IO-Fortran-Library", "parse_source_files_line_count"): Procedure(
+        "src/modules/io_fortran_lib_mod.f90", "read_file", 215, 228, ""
+    ),
+    ("IO-Fortran-Library", "count_substring_chars_direct"): Procedure(
+        "src/io_fortran_lib/string_methods_impl.f90", "count_substring_chars", 21, 92, ""
+    ),
+    ("coretran", "process_strings_parse"): Procedure(
+        "src/core/m_strings.f90", "compact", 192, 224, ""
+    ),
+    ("coretran", "count_entries_direct"): Procedure(
+        "src/core/m_strings.f90", "countentries", 168, 177, ""
+    ),
+    ("neural-fortran", "split_attention_heads_direct"): Procedure(
+        "src/nf/nf_multihead_attention_layer_submodule.f90", "split_heads", 137, 142, ""
+    ),
+    ("neural-fortran", "combine_attention_heads_direct_ordinary"): Procedure(
+        "src/nf/nf_multihead_attention_layer_submodule.f90", "combine_heads", 185, 194, ""
+    ),
+    ("neural-fortran", "combine_attention_heads_direct_zero_boundary"): Procedure(
+        "src/nf/nf_multihead_attention_layer_submodule.f90", "combine_heads", 185, 194, ""
+    ),
+    ("FOODIE", "initialize_integrator_direct_ordinary_supported"): Procedure(
+        "src/lib/foodie_integrator_euler_explicit.F90", "initialize", 134, 152, ""
+    ),
+    ("FOODIE", "initialize_integrator_direct_unsupported_boundary"): Procedure(
+        "src/lib/foodie_integrator_euler_explicit.F90", "initialize", 134, 152, ""
+    ),
+    ("ABAQUS", "uel_bodyforce_direct_rotating_ordinary"): Procedure(
+        "UEL_bodyforce.for", "UEL", 8, 194, ""
+    ),
+    ("ABAQUS", "uel_bodyforce_direct_zero_time_boundary"): Procedure(
+        "UEL_bodyforce.for", "UEL", 8, 194, ""
+    ),
+    ("WPS", "parse_wps_config_direct"): Procedure(
+        "ungrib/src/module_stringutil.F", "despace", 51, 80, ""
+    ),
+    ("WPS", "config_table_path_direct"): Procedure(
+        "ungrib/src/module_stringutil.F", "get_path", 13, 42, ""
+    ),
+    ("forpy", "forpy_public_parameter_direct_no_numpy_error"): Procedure(
+        "forpy_mod.F90", "NO_NUMPY_ERROR", 60, 60, ""
+    ),
+    ("forpy", "forpy_public_parameter_direct_meth_varargs"): Procedure(
+        "forpy_mod.F90", "METH_VARARGS", 64, 64, ""
+    ),
+    ("forpy", "forpy_public_parameter_direct_exception_error"): Procedure(
+        "forpy_mod.F90", "EXCEPTION_ERROR", 61, 61, ""
+    ),
+    ("forpy", "forpy_public_parameter_direct_meth_keywords"): Procedure(
+        "forpy_mod.F90", "METH_KEYWORDS", 65, 65, ""
+    ),
+    ("forpy", "forpy_public_parameter_direct_meth_noargs"): Procedure(
+        "forpy_mod.F90", "METH_NOARGS", 66, 66, ""
+    ),
+    ("hdf5", "get_numpy_dtype_itemsize_declared_direct_fortran_real_c_double"): Procedure(
+        "config/toolchain/fortpregen/gfortran/H5fortran_types.F90", "Fortran_REAL_C_DOUBLE", 31, 31, ""
+    ),
+    ("hdf5", "get_numpy_dtype_itemsize_declared_direct_hsize_t"): Procedure(
+        "config/toolchain/fortpregen/gfortran/H5fortran_types.F90", "HSIZE_T", 23, 23, ""
+    ),
+    ("ccpp-physics", "physical_constants_con_pi"): Procedure(
+        "physics/hooks/physcons.F90", "con_pi", 46, 46, ""
+    ),
+    ("ccpp-physics", "physical_constants_con_g"): Procedure(
+        "physics/hooks/physcons.F90", "con_g", 52, 52, ""
+    ),
+    ("ccpp-physics", "physical_constants_con_rd"): Procedure(
+        "physics/hooks/physcons.F90", "con_rd", 64, 64, ""
+    ),
+    ("ccpp-physics", "physical_constants_con_rv"): Procedure(
+        "physics/hooks/physcons.F90", "con_rv", 65, 65, ""
+    ),
+    ("ccpp-physics", "physical_constants_con_cp"): Procedure(
+        "physics/hooks/physcons.F90", "con_cp", 66, 66, ""
+    ),
+    ("ccpp-physics", "physical_constants_con_hvap"): Procedure(
+        "physics/hooks/physcons.F90", "con_hvap", 71, 71, ""
+    ),
+    ("ccpp-physics", "physical_constants_con_t0c"): Procedure(
+        "physics/hooks/physcons.F90", "con_t0c", 76, 76, ""
+    ),
+    ("minpack", "dpmpar"): Procedure("src/minpack.f90", "dpmpar", 16, 18, ""),
+    ("hdf5", "get_numpy_dtype_itemsize_int"): Procedure(
+        "config/toolchain/fortpregen/gfortran/H5fortran_types.F90",
+        "Fortran_INTEGER",
+        28,
+        28,
+        "",
+    ),
+    ("hdf5", "get_numpy_dtype_itemsize_double"): Procedure(
+        "config/toolchain/fortpregen/gfortran/H5fortran_types.F90",
+        "Fortran_DOUBLE",
+        36,
+        36,
+        "",
+    ),
+    ("hdf5", "get_numpy_dtype_itemsize_float"): Procedure(
+        "config/toolchain/fortpregen/gfortran/H5fortran_types.F90",
+        "Fortran_REAL_C_FLOAT",
+        30,
+        30,
+        "",
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -252,10 +419,29 @@ def starts_with_any(value: str, prefixes: tuple[str, ...]) -> bool:
 
 
 def desired_symbol(repository: str, case_name: str) -> str | None:
-    for (repo, prefix), symbol in SYMBOL_ALIASES.items():
-        if repository == repo and (case_name == prefix or case_name.startswith(prefix + "_")):
-            return symbol
-    return None
+    matches = [
+        (prefix, symbol)
+        for (repo, prefix), symbol in SYMBOL_ALIASES.items()
+        if repository == repo and (case_name == prefix or case_name.startswith(prefix + "_"))
+    ]
+    if not matches:
+        return None
+    # A general family alias may be a prefix of a more specific direct-source
+    # case (for example assert_close vs. assert_close_single_precision_direct).
+    # Select the most specific declared alias rather than relying on mapping
+    # insertion order.
+    return max(matches, key=lambda item: len(item[0]))[1]
+
+
+def explicit_locator(repository: str, case_name: str) -> Procedure | None:
+    matches = [
+        procedure
+        for (repo, prefix), procedure in LOCATOR_OVERRIDES.items()
+        if repository == repo and (case_name == prefix or case_name.startswith(prefix + "_"))
+    ]
+    if len(matches) > 1:
+        raise RuntimeError(f"ambiguous explicit locators for {repository}:{case_name}")
+    return matches[0] if matches else None
 
 
 def select_procedure(
@@ -338,8 +524,11 @@ def build(root: Path, corpus_root: Path, output: Path) -> None:
         if verifier is None:
             raise RuntimeError(f"no verifier function found for {repository}")
         synthetic = starts_with_any(probe["case_name"], SYNTHETIC_CASE_PREFIXES.get(repository, ()))
+        override = explicit_locator(repository, probe["case_name"])
         if synthetic:
             procedure, status = None, "not-applicable-synthetic"
+        elif override is not None:
+            procedure, status = override, "verified-explicit-locator"
         else:
             procedure, status = select_procedure(
                 repository,
@@ -349,7 +538,7 @@ def build(root: Path, corpus_root: Path, output: Path) -> None:
             )
         kind = oracle_kind(repository, probe["case_name"], procedure, verifier)
         note = status
-        audit_status = "verified" if status == "verified-symbol-match" else "needs-review"
+        audit_status = "verified" if status.startswith("verified-") else "needs-review"
         if status == "not-applicable-synthetic":
             audit_status = "verified"
             note = "Synthetic contract; no upstream procedure is claimed."
@@ -374,7 +563,7 @@ def build(root: Path, corpus_root: Path, output: Path) -> None:
 
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=FIELDS)
+        writer = csv.DictWriter(handle, fieldnames=FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
