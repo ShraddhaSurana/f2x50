@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ShraddhaSurana/f2x50/schemas/repository.schema.json",
+  "title": "f2x50 repository record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["benchmark_id", "tier", "repository", "directory", "upstream_url", "revision", "revision_date", "fortran_files", "fortran_loc", "domain", "license_spdx", "license_status", "license_evidence"],
+  "properties": {
+    "benchmark_id": {"type": "string", "pattern": "^f2x50-(low|medium|complex)-[0-9]{2}$"},
+    "tier": {"enum": ["low", "medium", "complex"]},
+    "repository": {"type": "string", "minLength": 1},
+    "directory": {"type": "string", "minLength": 1},
+    "upstream_url": {"type": "string", "pattern": "^https://"},
+    "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "revision_date": {"type": "string", "format": "date-time"},
+    "fortran_files": {"type": "integer", "minimum": 1},
+    "fortran_loc": {"type": "integer", "minimum": 1000},
+    "domain": {"type": "string", "minLength": 1},
+    "license_spdx": {"type": "string", "minLength": 1},
+    "license_status": {"enum": ["declared", "mixed-or-ambiguous", "no-explicit-license-at-pin"]},
+    "license_evidence": {"type": "string", "minLength": 1}
+  }
+}

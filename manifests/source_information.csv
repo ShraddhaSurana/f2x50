@@ -1,0 +1,383 @@
+probe_id,oracle_kind,upstream_path,upstream_symbol,upstream_start_line,upstream_end_line,harness_path,harness_start_line,harness_end_line,audit_status,audit_note
+f2x50-complex-ccpp-physics-001,inline-reimplementation,physics/Interstitials/UFS_SCM_NEPTUNE/GFS_debug.F90,print_logic_0d,60,69,harness/python/run_corpus_verification.py,2792,2899,verified,verified-symbol-match
+f2x50-complex-ccpp-physics-002,inline-reimplementation,physics/Interstitials/UFS_SCM_NEPTUNE/GFS_debug.F90,print_logic_0d,60,69,harness/python/run_corpus_verification.py,2792,2899,verified,verified-symbol-match
+f2x50-complex-ccpp-physics-003,inline-reimplementation,physics/Interstitials/UFS_SCM_NEPTUNE/GFS_debug.F90,print_int_0d,92,101,harness/python/run_corpus_verification.py,2792,2899,verified,verified-symbol-match
+f2x50-complex-ccpp-physics-004,inline-reimplementation,physics/Interstitials/UFS_SCM_NEPTUNE/GFS_debug.F90,print_real_0d,147,156,harness/python/run_corpus_verification.py,2792,2899,verified,verified-symbol-match
+f2x50-complex-ccpp-physics-005,inline-reimplementation,,,,,harness/python/run_corpus_verification.py,2792,2899,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-ccpp-physics-006,inline-reimplementation,,,,,harness/python/run_corpus_verification.py,2792,2899,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-ccpp-physics-007,inline-reimplementation,,,,,harness/python/run_corpus_verification.py,2792,2899,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-ccpp-physics-008,inline-reimplementation,,,,,harness/python/run_corpus_verification.py,2792,2899,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-ccpp-physics-009,inline-reimplementation,,,,,harness/python/run_corpus_verification.py,2792,2899,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-ccpp-physics-010,inline-reimplementation,,,,,harness/python/run_corpus_verification.py,2792,2899,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-ccpp-physics-011,inline-reimplementation,,,,,harness/python/run_corpus_verification.py,2792,2899,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-cp2k-001,inline-reimplementation,src/common/kahan_sum.F,kahan_sum_d1,105,132,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-002,inline-reimplementation,src/common/kahan_sum.F,kahan_sum_d1,105,132,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-003,inline-reimplementation,src/common/kahan_sum.F,kahan_dot_product_d1,140,169,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-004,inline-reimplementation,src/common/kahan_sum.F,kahan_dot_product_d1,140,169,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-005,inline-reimplementation,src/common/kahan_sum.F,kahan_sum_d1,105,132,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-006,inline-reimplementation,src/common/kahan_sum.F,kahan_dot_product_d1,140,169,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-007,inline-reimplementation,src/common/kahan_sum.F,kahan_sum_d1,105,132,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-008,inline-reimplementation,src/common/kahan_sum.F,kahan_sum_d1,105,132,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-009,inline-reimplementation,src/common/kahan_sum.F,kahan_dot_product_d1,140,169,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-cp2k-010,inline-reimplementation,src/common/kahan_sum.F,kahan_sum_d1,105,132,harness/python/extended_repo_verifiers.py,357,504,verified,verified-symbol-match
+f2x50-complex-elmerfem-001,inline-reimplementation,misc/netcdf/src/GridDataMapper/NetCDFInterpolate.f90,interpolate,91,178,harness/python/extended_repo_verifiers.py,702,800,verified,verified-symbol-match
+f2x50-complex-elmerfem-002,inline-reimplementation,misc/netcdf/src/GridDataMapper/NetCDFInterpolate.f90,interpolate,91,178,harness/python/extended_repo_verifiers.py,702,800,verified,verified-symbol-match
+f2x50-complex-elmerfem-003,inline-reimplementation,misc/netcdf/src/GridDataMapper/NetCDFInterpolate.f90,interpolate,91,178,harness/python/extended_repo_verifiers.py,702,800,verified,verified-symbol-match
+f2x50-complex-elmerfem-004,inline-reimplementation,misc/netcdf/src/GridDataMapper/NetCDFInterpolate.f90,interpolate,91,178,harness/python/extended_repo_verifiers.py,702,800,verified,verified-symbol-match
+f2x50-complex-elmerfem-005,inline-reimplementation,misc/netcdf/src/GridDataMapper/NetCDFInterpolate.f90,interpolate,91,178,harness/python/extended_repo_verifiers.py,702,800,verified,verified-symbol-match
+f2x50-complex-elmerfem-006,inline-reimplementation,misc/netcdf/src/GridDataMapper/NetCDFInterpolate.f90,interpolate,91,178,harness/python/extended_repo_verifiers.py,702,800,verified,verified-symbol-match
+f2x50-complex-elmerfem-007,inline-reimplementation,misc/netcdf/src/GridDataMapper/NetCDFInterpolate.f90,interpolate,91,178,harness/python/extended_repo_verifiers.py,702,800,verified,verified-symbol-match
+f2x50-complex-elmerfem-008,inline-reimplementation,misc/netcdf/src/GridDataMapper/NetCDFInterpolate.f90,interpolate,91,178,harness/python/extended_repo_verifiers.py,702,800,verified,verified-symbol-match
+f2x50-complex-fpm-001,inline-reimplementation,src/fpm_compiler.F90,get_default_c_compiler,875,910,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-002,inline-reimplementation,src/fpm_compiler.F90,get_default_c_compiler,875,910,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-003,inline-reimplementation,src/fpm_compiler.F90,get_default_c_compiler,875,910,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-004,inline-reimplementation,src/fpm_compiler.F90,get_default_c_compiler,875,910,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-005,inline-reimplementation,src/fpm_compiler.F90,get_default_c_compiler,875,910,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-006,inline-reimplementation,src/fpm_compiler.F90,get_default_c_compiler,875,910,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-007,inline-reimplementation,src/fpm_compiler.F90,get_default_c_compiler,875,910,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-008,inline-reimplementation,src/fpm_compiler.F90,get_default_c_compiler,875,910,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-009,inline-reimplementation,src/fpm_compiler.F90,get_default_cxx_compiler,913,948,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-010,inline-reimplementation,src/fpm_compiler.F90,get_default_cxx_compiler,913,948,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-011,inline-reimplementation,src/fpm_compiler.F90,get_default_cxx_compiler,913,948,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-012,inline-reimplementation,src/fpm_compiler.F90,get_default_cxx_compiler,913,948,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-013,inline-reimplementation,src/fpm_compiler.F90,get_default_cxx_compiler,913,948,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-014,inline-reimplementation,src/fpm_compiler.F90,get_default_cxx_compiler,913,948,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-015,inline-reimplementation,src/fpm_compiler.F90,get_default_cxx_compiler,913,948,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-fpm-016,inline-reimplementation,src/fpm_compiler.F90,get_default_cxx_compiler,913,948,harness/python/run_corpus_verification.py,2548,2789,verified,verified-symbol-match
+f2x50-complex-hdf5-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-005,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-006,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-007,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-008,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-009,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-hdf5-010,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,629,699,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-complex-lapack-001,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-002,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-003,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-004,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-005,f2py-wrapper,BLAS/SRC/dscal.f,dscal,78,78,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-006,f2py-wrapper,BLAS/SRC/dscal.f,dscal,78,78,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-007,f2py-wrapper,BLAS/SRC/dscal.f,dscal,78,78,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-008,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-009,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-010,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-011,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-012,f2py-wrapper,BLAS/SRC/dcopy.f,dcopy,81,81,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-013,f2py-wrapper,BLAS/SRC/dscal.f,dscal,78,78,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-014,f2py-wrapper,BLAS/SRC/dscal.f,dscal,78,78,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-015,f2py-wrapper,BLAS/SRC/dscal.f,dscal,78,78,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-lapack-016,f2py-wrapper,BLAS/SRC/dscal.f,dscal,78,78,harness/python/run_corpus_verification.py,2255,2334,verified,verified-symbol-match
+f2x50-complex-nek5000-001,original-file-plus-driver,3rd_party/blasLapack/ddot.f,ddot,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-002,original-file-plus-driver,3rd_party/blasLapack/dnrm2.f,dnrm2,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-003,original-file-plus-driver,3rd_party/blasLapack/daxpy.f,daxpy,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-004,original-file-plus-driver,3rd_party/blasLapack/daxpy.f,daxpy,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-005,original-file-plus-driver,3rd_party/blasLapack/daxpy.f,daxpy,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-006,original-file-plus-driver,3rd_party/blasLapack/daxpy.f,daxpy,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-007,original-file-plus-driver,3rd_party/blasLapack/dgemv.f,dgemv,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-008,original-file-plus-driver,3rd_party/blasLapack/dgemv.f,dgemv,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-009,original-file-plus-driver,3rd_party/blasLapack/dgemm.f,dgemm,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-010,original-file-plus-driver,3rd_party/blasLapack/dgemm.f,dgemm,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-011,original-file-plus-driver,3rd_party/blasLapack/dgemm.f,dgemm,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-012,original-file-plus-driver,3rd_party/blasLapack/dgemm.f,dgemm,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-nek5000-013,original-file-plus-driver,3rd_party/blasLapack/dnrm2.f,dnrm2,1,1,harness/python/run_corpus_verification.py,2418,2545,verified,verified-symbol-match
+f2x50-complex-openfast-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-005,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-006,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-007,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-008,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-009,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-010,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-openfast-011,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,507,626,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-complex-petsc-001,extracted-source,src/ksp/ksp/tutorials/ex61f.F90,split_indices,15,41,harness/python/run_corpus_verification.py,2902,2992,verified,verified-symbol-match
+f2x50-complex-petsc-002,extracted-source,src/ksp/ksp/tutorials/ex61f.F90,split_indices,15,41,harness/python/run_corpus_verification.py,2902,2992,verified,verified-symbol-match
+f2x50-complex-petsc-003,extracted-source,src/ksp/ksp/tutorials/ex61f.F90,split_indices,15,41,harness/python/run_corpus_verification.py,2902,2992,verified,verified-symbol-match
+f2x50-complex-petsc-004,extracted-source,src/ksp/ksp/tutorials/ex61f.F90,split_indices,15,41,harness/python/run_corpus_verification.py,2902,2992,verified,verified-symbol-match
+f2x50-complex-petsc-005,extracted-source,src/ksp/ksp/tutorials/ex61f.F90,split_indices,15,41,harness/python/run_corpus_verification.py,2902,2992,verified,verified-symbol-match
+f2x50-complex-petsc-006,extracted-source,src/ksp/ksp/tutorials/ex61f.F90,split_indices,15,41,harness/python/run_corpus_verification.py,2902,2992,verified,verified-symbol-match
+f2x50-complex-petsc-007,extracted-source,src/ksp/ksp/tutorials/ex61f.F90,split_indices,15,41,harness/python/run_corpus_verification.py,2902,2992,verified,verified-symbol-match
+f2x50-complex-petsc-008,extracted-source,src/ksp/ksp/tutorials/ex61f.F90,split_indices,15,41,harness/python/run_corpus_verification.py,2902,2992,verified,verified-symbol-match
+f2x50-complex-pymc2-001,original-file-plus-driver,blas/BLAS/dcopy.f,dcopy,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-002,original-file-plus-driver,blas/BLAS/dcopy.f,dcopy,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-003,original-file-plus-driver,blas/BLAS/dcopy.f,dcopy,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-004,original-file-plus-driver,blas/BLAS/dcopy.f,dcopy,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-005,original-file-plus-driver,blas/BLAS/dscal.f,dscal,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-006,original-file-plus-driver,blas/BLAS/dscal.f,dscal,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-007,original-file-plus-driver,blas/BLAS/dscal.f,dscal,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-008,original-file-plus-driver,blas/BLAS/daxpy.f,daxpy,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-009,original-file-plus-driver,blas/BLAS/daxpy.f,daxpy,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-complex-pymc2-010,original-file-plus-driver,blas/BLAS/daxpy.f,daxpy,1,1,harness/python/run_corpus_verification.py,2337,2415,verified,verified-symbol-match
+f2x50-low-abaqus-001,inline-reimplementation,UMAT_linear_elastic.for,umat,1,1,harness/python/extended_repo_verifiers.py,2054,2166,verified,verified-symbol-match
+f2x50-low-abaqus-002,inline-reimplementation,UMAT_linear_elastic.for,umat,1,1,harness/python/extended_repo_verifiers.py,2054,2166,verified,verified-symbol-match
+f2x50-low-abaqus-003,inline-reimplementation,UMAT_linear_elastic.for,umat,1,1,harness/python/extended_repo_verifiers.py,2054,2166,verified,verified-symbol-match
+f2x50-low-abaqus-004,inline-reimplementation,UMAT_linear_elastic.for,umat,1,1,harness/python/extended_repo_verifiers.py,2054,2166,verified,verified-symbol-match
+f2x50-low-abaqus-005,inline-reimplementation,UMAT_linear_elastic.for,umat,1,1,harness/python/extended_repo_verifiers.py,2054,2166,verified,verified-symbol-match
+f2x50-low-abaqus-006,inline-reimplementation,UMAT_linear_elastic.for,umat,1,1,harness/python/extended_repo_verifiers.py,2054,2166,verified,verified-symbol-match
+f2x50-low-bspline-fortran-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1557,1653,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-bspline-fortran-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1557,1653,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-bspline-fortran-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1557,1653,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-bspline-fortran-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1557,1653,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-bspline-fortran-005,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1557,1653,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-bspline-fortran-006,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1557,1653,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-cans-001,inline-reimplementation,src/initflow.f90,couette,405,420,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-002,inline-reimplementation,src/initflow.f90,couette,405,420,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-003,inline-reimplementation,src/initflow.f90,couette,405,420,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-004,inline-reimplementation,src/initflow.f90,couette,405,420,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-005,inline-reimplementation,src/initflow.f90,couette,405,420,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-006,inline-reimplementation,src/initflow.f90,poiseuille,422,437,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-007,inline-reimplementation,src/initflow.f90,poiseuille,422,437,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-008,inline-reimplementation,src/initflow.f90,poiseuille,422,437,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-009,inline-reimplementation,src/initflow.f90,poiseuille,422,437,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-cans-010,inline-reimplementation,src/initflow.f90,poiseuille,422,437,harness/python/extended_repo_verifiers.py,268,354,verified,verified-symbol-match
+f2x50-low-datetime-fortran-001,original-file-plus-driver,src/datetime_module.f90,daysinmonth,1000,1022,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-002,original-file-plus-driver,src/datetime_module.f90,daysinmonth,1000,1022,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-003,original-file-plus-driver,src/datetime_module.f90,daysinmonth,1000,1022,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-004,original-file-plus-driver,src/datetime_module.f90,daysinmonth,1000,1022,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-005,original-file-plus-driver,src/datetime_module.f90,isleapyear,970,975,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-006,original-file-plus-driver,src/datetime_module.f90,isleapyear,970,975,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-007,original-file-plus-driver,src/datetime_module.f90,isleapyear,970,975,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-008,original-file-plus-driver,src/datetime_module.f90,isleapyear,970,975,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-009,original-file-plus-driver,src/datetime_module.f90,daysinyear,1025,1033,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-010,original-file-plus-driver,src/datetime_module.f90,daysinyear,1025,1033,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-011,original-file-plus-driver,src/datetime_module.f90,daysinyear,1025,1033,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-datetime-fortran-012,original-file-plus-driver,src/datetime_module.f90,daysinyear,1025,1033,harness/python/run_corpus_verification.py,1345,1408,verified,verified-symbol-match
+f2x50-low-fastgpt-001,inline-reimplementation,src/gpt2.f90,fast_tanh,30,45,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-002,inline-reimplementation,src/gpt2.f90,fast_tanh,30,45,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-003,inline-reimplementation,src/gpt2.f90,fast_tanh,30,45,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-004,inline-reimplementation,src/gpt2.f90,fast_tanh,30,45,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-005,inline-reimplementation,src/gpt2.f90,fast_tanh,30,45,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-006,inline-reimplementation,src/gpt2.f90,fast_tanh,30,45,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-007,inline-reimplementation,src/gpt2.f90,gelu,47,50,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-008,inline-reimplementation,src/gpt2.f90,gelu,47,50,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-009,inline-reimplementation,src/gpt2.f90,gelu,47,50,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-010,inline-reimplementation,src/gpt2.f90,gelu,47,50,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-011,inline-reimplementation,src/gpt2.f90,gelu,47,50,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-012,inline-reimplementation,src/gpt2.f90,gelu,47,50,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-013,inline-reimplementation,src/gpt2.f90,softmax,52,60,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-014,inline-reimplementation,src/gpt2.f90,softmax,52,60,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-015,inline-reimplementation,src/gpt2.f90,softmax,52,60,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-016,inline-reimplementation,src/gpt2.f90,softmax,52,60,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-017,inline-reimplementation,src/gpt2.f90,softmax,52,60,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fastgpt-018,inline-reimplementation,src/gpt2.f90,softmax,52,60,harness/python/run_corpus_verification.py,991,1083,verified,verified-symbol-match
+f2x50-low-fftpack-001,original-file-plus-driver,src/zfftf.f90,zfftf,1,12,harness/python/run_corpus_verification.py,1471,1554,verified,verified-symbol-match
+f2x50-low-fftpack-002,original-file-plus-driver,src/zfftf.f90,zfftf,1,12,harness/python/run_corpus_verification.py,1471,1554,verified,verified-symbol-match
+f2x50-low-fftpack-003,original-file-plus-driver,src/zfftf.f90,zfftf,1,12,harness/python/run_corpus_verification.py,1471,1554,verified,verified-symbol-match
+f2x50-low-fftpack-004,original-file-plus-driver,src/zfftf.f90,zfftf,1,12,harness/python/run_corpus_verification.py,1471,1554,verified,verified-symbol-match
+f2x50-low-fftpack-005,original-file-plus-driver,src/zfftb.f90,zfftb,1,12,harness/python/run_corpus_verification.py,1471,1554,verified,verified-symbol-match
+f2x50-low-fftpack-006,original-file-plus-driver,src/zfftb.f90,zfftb,1,12,harness/python/run_corpus_verification.py,1471,1554,verified,verified-symbol-match
+f2x50-low-fftpack-007,original-file-plus-driver,src/zfftb.f90,zfftb,1,12,harness/python/run_corpus_verification.py,1471,1554,verified,verified-symbol-match
+f2x50-low-fftpack-008,original-file-plus-driver,src/zfftb.f90,zfftb,1,12,harness/python/run_corpus_verification.py,1471,1554,verified,verified-symbol-match
+f2x50-low-fkb-001,extracted-source,src/lib/mod_activation.F90,gaussian,31,37,harness/python/run_corpus_verification.py,926,988,verified,verified-symbol-match
+f2x50-low-fkb-002,extracted-source,src/lib/mod_activation.F90,gaussian,31,37,harness/python/run_corpus_verification.py,926,988,verified,verified-symbol-match
+f2x50-low-fkb-003,extracted-source,src/lib/mod_activation.F90,gaussian,31,37,harness/python/run_corpus_verification.py,926,988,verified,verified-symbol-match
+f2x50-low-fkb-004,extracted-source,src/lib/mod_activation.F90,gaussian,31,37,harness/python/run_corpus_verification.py,926,988,verified,verified-symbol-match
+f2x50-low-fkb-005,inline-reimplementation,src/lib/mod_activation.F90,gaussian_prime,39,48,harness/python/run_corpus_verification.py,926,988,verified,verified-symbol-match
+f2x50-low-fkb-006,inline-reimplementation,src/lib/mod_activation.F90,gaussian_prime,39,48,harness/python/run_corpus_verification.py,926,988,verified,verified-symbol-match
+f2x50-low-fkb-007,inline-reimplementation,src/lib/mod_activation.F90,gaussian_prime,39,48,harness/python/run_corpus_verification.py,926,988,verified,verified-symbol-match
+f2x50-low-fkb-008,inline-reimplementation,src/lib/mod_activation.F90,gaussian_prime,39,48,harness/python/run_corpus_verification.py,926,988,verified,verified-symbol-match
+f2x50-low-forpy-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,2169,2236,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-low-forpy-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,2169,2236,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-low-forpy-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,2169,2236,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-low-forpy-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,2169,2236,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-low-fortran-utils-001,inline-reimplementation,src/utils.f90,upcase,18,30,harness/python/run_corpus_verification.py,1221,1342,verified,verified-symbol-match
+f2x50-low-fortran-utils-002,inline-reimplementation,src/utils.f90,lowcase,32,44,harness/python/run_corpus_verification.py,1221,1342,verified,verified-symbol-match
+f2x50-low-fortran-utils-003,inline-reimplementation,src/utils.f90,blank,56,64,harness/python/run_corpus_verification.py,1221,1342,verified,verified-symbol-match
+f2x50-low-fortran-utils-004,inline-reimplementation,src/utils.f90,blank,56,64,harness/python/run_corpus_verification.py,1221,1342,verified,verified-symbol-match
+f2x50-low-fortran-utils-005,inline-reimplementation,src/utils.f90,blank,56,64,harness/python/run_corpus_verification.py,1221,1342,verified,verified-symbol-match
+f2x50-low-fortran-utils-006,inline-reimplementation,src/utils.f90,whitechar,46,54,harness/python/run_corpus_verification.py,1221,1342,verified,verified-symbol-match
+f2x50-low-fortran-utils-007,inline-reimplementation,src/utils.f90,numstrings,66,77,harness/python/run_corpus_verification.py,1221,1342,verified,verified-symbol-match
+f2x50-low-fortran2018-examples-001,inline-reimplementation,src/real/assert.f90,isclose_64,63,103,harness/python/extended_repo_verifiers.py,110,176,verified,verified-symbol-match
+f2x50-low-fortran2018-examples-002,inline-reimplementation,src/real/assert.f90,isclose_64,63,103,harness/python/extended_repo_verifiers.py,110,176,verified,verified-symbol-match
+f2x50-low-fortran2018-examples-003,inline-reimplementation,src/real/assert.f90,isclose_64,63,103,harness/python/extended_repo_verifiers.py,110,176,verified,verified-symbol-match
+f2x50-low-fortran2018-examples-004,inline-reimplementation,src/real/assert.f90,isclose_64,63,103,harness/python/extended_repo_verifiers.py,110,176,verified,verified-symbol-match
+f2x50-low-fortranlib-001,extracted-source,src/posix_default.f90,file_exists,45,50,harness/python/run_corpus_verification.py,1155,1218,verified,verified-symbol-match
+f2x50-low-fortranlib-002,extracted-source,src/posix_default.f90,file_exists,45,50,harness/python/run_corpus_verification.py,1155,1218,verified,verified-symbol-match
+f2x50-low-fortranlib-003,extracted-source,src/posix_default.f90,dir_exists,52,57,harness/python/run_corpus_verification.py,1155,1218,verified,verified-symbol-match
+f2x50-low-fortranlib-004,extracted-source,src/posix_default.f90,dir_exists,52,57,harness/python/run_corpus_verification.py,1155,1218,verified,verified-symbol-match
+f2x50-low-functional-fortran-001,inline-reimplementation,src/functional.f90,arange_r8,685,707,harness/python/extended_repo_verifiers.py,32,107,verified,verified-symbol-match
+f2x50-low-functional-fortran-002,inline-reimplementation,src/functional.f90,arange_r8,685,707,harness/python/extended_repo_verifiers.py,32,107,verified,verified-symbol-match
+f2x50-low-functional-fortran-003,inline-reimplementation,src/functional.f90,arange_r8,685,707,harness/python/extended_repo_verifiers.py,32,107,verified,verified-symbol-match
+f2x50-low-functional-fortran-004,inline-reimplementation,src/functional.f90,reverse_r8,3003,3010,harness/python/extended_repo_verifiers.py,32,107,verified,verified-symbol-match
+f2x50-low-functional-fortran-005,inline-reimplementation,src/functional.f90,reverse_r8,3003,3010,harness/python/extended_repo_verifiers.py,32,107,verified,verified-symbol-match
+f2x50-low-functional-fortran-006,inline-reimplementation,src/functional.f90,reverse_r8,3003,3010,harness/python/extended_repo_verifiers.py,32,107,verified,verified-symbol-match
+f2x50-low-functional-fortran-007,inline-reimplementation,src/functional.f90,reverse_r8,3003,3010,harness/python/extended_repo_verifiers.py,32,107,verified,verified-symbol-match
+f2x50-low-io-fortran-library-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,2239,2308,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-low-io-fortran-library-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,2239,2308,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-low-io-fortran-library-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,2239,2308,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-low-io-fortran-library-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,2239,2308,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-low-m-args-main-001,inline-reimplementation,src/M_args.f90,oneline,1761,1774,harness/python/extended_repo_verifiers.py,1193,1234,verified,verified-symbol-match
+f2x50-low-m-args-main-002,inline-reimplementation,src/M_args.f90,oneline,1761,1774,harness/python/extended_repo_verifiers.py,1193,1234,verified,verified-symbol-match
+f2x50-low-m-args-main-003,inline-reimplementation,src/M_args.f90,oneline,1761,1774,harness/python/extended_repo_verifiers.py,1193,1234,verified,verified-symbol-match
+f2x50-low-m-args-main-004,inline-reimplementation,src/M_args.f90,oneline,1761,1774,harness/python/extended_repo_verifiers.py,1193,1234,verified,verified-symbol-match
+f2x50-low-m-strings-001,original-file-plus-driver,src/M_strings.F90,a2i,6890,6909,harness/python/run_corpus_verification.py,1411,1468,verified,verified-symbol-match
+f2x50-low-m-strings-002,original-file-plus-driver,src/M_strings.F90,a2i,6890,6909,harness/python/run_corpus_verification.py,1411,1468,verified,verified-symbol-match
+f2x50-low-m-strings-003,original-file-plus-driver,src/M_strings.F90,a2i,6890,6909,harness/python/run_corpus_verification.py,1411,1468,verified,verified-symbol-match
+f2x50-low-m-strings-004,original-file-plus-driver,src/M_strings.F90,a2i,6890,6909,harness/python/run_corpus_verification.py,1411,1468,verified,verified-symbol-match
+f2x50-low-m-time-001,inline-reimplementation,src/M_time.F90,sec2days,4650,4780,harness/python/extended_repo_verifiers.py,1323,1396,verified,verified-symbol-match
+f2x50-low-m-time-002,inline-reimplementation,src/M_time.F90,sec2days,4650,4780,harness/python/extended_repo_verifiers.py,1323,1396,verified,verified-symbol-match
+f2x50-low-m-time-003,inline-reimplementation,src/M_time.F90,sec2days,4650,4780,harness/python/extended_repo_verifiers.py,1323,1396,verified,verified-symbol-match
+f2x50-low-m-time-004,inline-reimplementation,src/M_time.F90,sec2days,4650,4780,harness/python/extended_repo_verifiers.py,1323,1396,verified,verified-symbol-match
+f2x50-low-roots-fortran-001,original-file-plus-driver,src/root_module.F90,bisection,769,827,harness/python/extended_repo_verifiers.py,1414,1520,verified,verified-symbol-match
+f2x50-low-roots-fortran-002,original-file-plus-driver,src/root_module.F90,bisection,769,827,harness/python/extended_repo_verifiers.py,1414,1520,verified,verified-symbol-match
+f2x50-low-roots-fortran-003,original-file-plus-driver,src/root_module.F90,bisection,769,827,harness/python/extended_repo_verifiers.py,1414,1520,verified,verified-symbol-match
+f2x50-low-roots-fortran-004,original-file-plus-driver,src/root_module.F90,bisection,769,827,harness/python/extended_repo_verifiers.py,1414,1520,verified,verified-symbol-match
+f2x50-low-roots-fortran-005,original-file-plus-driver,src/root_module.F90,root_scalar_by_name,390,428,harness/python/extended_repo_verifiers.py,1414,1520,verified,verified-symbol-match
+f2x50-low-roots-fortran-006,original-file-plus-driver,src/root_module.F90,root_scalar_by_name,390,428,harness/python/extended_repo_verifiers.py,1414,1520,verified,verified-symbol-match
+f2x50-low-roots-fortran-007,original-file-plus-driver,src/root_module.F90,root_scalar_by_name,390,428,harness/python/extended_repo_verifiers.py,1414,1520,verified,verified-symbol-match
+f2x50-low-test-drive-001,inline-reimplementation,src/testdrive.F90,check_float_dp,928,995,harness/python/extended_repo_verifiers.py,179,265,verified,verified-symbol-match
+f2x50-low-test-drive-002,inline-reimplementation,src/testdrive.F90,check_float_dp,928,995,harness/python/extended_repo_verifiers.py,179,265,verified,verified-symbol-match
+f2x50-low-test-drive-003,inline-reimplementation,src/testdrive.F90,check_float_dp,928,995,harness/python/extended_repo_verifiers.py,179,265,verified,verified-symbol-match
+f2x50-low-test-drive-004,inline-reimplementation,src/testdrive.F90,check_float_dp,928,995,harness/python/extended_repo_verifiers.py,179,265,verified,verified-symbol-match
+f2x50-low-test-drive-005,inline-reimplementation,src/testdrive.F90,check_float_dp,928,995,harness/python/extended_repo_verifiers.py,179,265,verified,verified-symbol-match
+f2x50-low-test-drive-006,inline-reimplementation,src/testdrive.F90,check_float_dp,928,995,harness/python/extended_repo_verifiers.py,179,265,verified,verified-symbol-match
+f2x50-low-test-drive-007,inline-reimplementation,src/testdrive.F90,check_float_dp,928,995,harness/python/extended_repo_verifiers.py,179,265,verified,verified-symbol-match
+f2x50-low-test-drive-008,inline-reimplementation,src/testdrive.F90,check_float_dp,928,995,harness/python/extended_repo_verifiers.py,179,265,verified,verified-symbol-match
+f2x50-low-toml-f-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1237,1320,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-toml-f-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1237,1320,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-toml-f-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1237,1320,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-toml-f-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1237,1320,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-toml-f-005,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1237,1320,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-toml-f-006,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1237,1320,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-low-toml-f-007,inline-reimplementation,test/example-1/src/pkg/compatibility.f90,convert,37,75,harness/python/extended_repo_verifiers.py,1237,1320,verified,verified-symbol-match
+f2x50-low-toml-f-008,inline-reimplementation,test/example-1/src/pkg/compatibility.f90,convert,37,75,harness/python/extended_repo_verifiers.py,1237,1320,verified,verified-symbol-match
+f2x50-low-toml-f-009,inline-reimplementation,test/example-1/src/pkg/compatibility.f90,convert,37,75,harness/python/extended_repo_verifiers.py,1237,1320,verified,verified-symbol-match
+f2x50-low-toml-f-010,inline-reimplementation,test/example-1/src/pkg/compatibility.f90,convert,37,75,harness/python/extended_repo_verifiers.py,1237,1320,verified,verified-symbol-match
+f2x50-low-tsunami-001,f2py-wrapper,src/ch10/mod_parallel.f90,num_tiles,31,74,harness/python/run_corpus_verification.py,844,923,verified,verified-symbol-match
+f2x50-low-tsunami-002,f2py-wrapper,src/ch10/mod_parallel.f90,tile_indices_1d,76,96,harness/python/run_corpus_verification.py,844,923,verified,verified-symbol-match
+f2x50-low-tsunami-003,inline-reimplementation,src/ch10/mod_parallel.f90,denominators,20,29,harness/python/run_corpus_verification.py,844,923,verified,verified-symbol-match
+f2x50-low-tsunami-004,inline-reimplementation,src/ch10/mod_parallel.f90,denominators,20,29,harness/python/run_corpus_verification.py,844,923,verified,verified-symbol-match
+f2x50-low-tsunami-005,inline-reimplementation,src/ch10/mod_parallel.f90,denominators,20,29,harness/python/run_corpus_verification.py,844,923,verified,verified-symbol-match
+f2x50-low-tsunami-006,inline-reimplementation,src/ch04/mod_diff.f90,diff_centered,11,22,harness/python/run_corpus_verification.py,844,923,verified,verified-symbol-match
+f2x50-low-tsunami-007,inline-reimplementation,src/ch04/mod_diff.f90,diff_upwind,25,34,harness/python/run_corpus_verification.py,844,923,verified,verified-symbol-match
+f2x50-medium-arpack-ng-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1136,1190,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-arpack-ng-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1136,1190,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-arpack-ng-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1136,1190,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-arpack-ng-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1136,1190,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-arpack-ng-005,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1136,1190,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-arpack-ng-006,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1136,1190,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-arpack-ng-007,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1136,1190,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-atomsk-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1910,1946,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-atomsk-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1910,1946,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-atomsk-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1910,1946,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-atomsk-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1910,1946,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-cmathtuts-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1813,1861,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-cmathtuts-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1813,1861,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-cmathtuts-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1813,1861,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-cmathtuts-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1813,1861,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-coretran-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1864,1907,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-coretran-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1864,1907,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-coretran-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1864,1907,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-coretran-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1864,1907,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-crest-001,inline-reimplementation,src/strucreader.f90,e2i,2120,2147,harness/python/extended_repo_verifiers.py,986,1039,verified,verified-symbol-match
+f2x50-medium-crest-002,inline-reimplementation,src/strucreader.f90,e2i,2120,2147,harness/python/extended_repo_verifiers.py,986,1039,verified,verified-symbol-match
+f2x50-medium-crest-003,inline-reimplementation,src/strucreader.f90,e2i,2120,2147,harness/python/extended_repo_verifiers.py,986,1039,verified,verified-symbol-match
+f2x50-medium-crest-004,inline-reimplementation,src/strucreader.f90,e2i,2120,2147,harness/python/extended_repo_verifiers.py,986,1039,verified,verified-symbol-match
+f2x50-medium-dftd4-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1949,1993,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-dftd4-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1949,1993,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-dftd4-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1949,1993,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-dftd4-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1949,1993,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-foodie-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1741,1810,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-foodie-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1741,1810,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-foodie-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1741,1810,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-foodie-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1741,1810,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-fortran-astrodynamics-toolkit-001,inline-reimplementation,src/complex_step.f90,complex_step_derivative,40,51,harness/python/run_corpus_verification.py,1862,1957,verified,verified-symbol-match
+f2x50-medium-fortran-astrodynamics-toolkit-002,inline-reimplementation,src/geodesy_module.f90,geodetic_to_cartesian,266,294,harness/python/run_corpus_verification.py,1862,1957,verified,verified-symbol-match
+f2x50-medium-fortran-astrodynamics-toolkit-003,inline-reimplementation,src/geodesy_module.f90,geodetic_to_cartesian,266,294,harness/python/run_corpus_verification.py,1862,1957,verified,verified-symbol-match
+f2x50-medium-fortran-astrodynamics-toolkit-004,inline-reimplementation,src/geodesy_module.f90,geodetic_to_cartesian,266,294,harness/python/run_corpus_verification.py,1862,1957,verified,verified-symbol-match
+f2x50-medium-incompact3d-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1996,2051,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-incompact3d-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1996,2051,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-incompact3d-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1996,2051,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-incompact3d-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1996,2051,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-incompact3d-005,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1996,2051,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-json-fortran-001,inline-reimplementation,src/json_string_utilities.F90,lowercase_string,960,977,harness/python/run_corpus_verification.py,1715,1859,verified,verified-symbol-match
+f2x50-medium-json-fortran-002,inline-reimplementation,src/json_string_utilities.F90,encode_rfc6901,1064,1076,harness/python/run_corpus_verification.py,1715,1859,verified,verified-symbol-match
+f2x50-medium-json-fortran-003,inline-reimplementation,src/json_string_utilities.F90,decode_rfc6901,1043,1055,harness/python/run_corpus_verification.py,1715,1859,verified,verified-symbol-match
+f2x50-medium-json-fortran-004,inline-reimplementation,src/json_string_utilities.F90,replace_string,988,1034,harness/python/run_corpus_verification.py,1715,1859,verified,verified-symbol-match
+f2x50-medium-json-fortran-005,inline-reimplementation,src/json_string_utilities.F90,escape_string,491,612,harness/python/run_corpus_verification.py,1715,1859,verified,verified-symbol-match
+f2x50-medium-json-fortran-006,inline-reimplementation,src/json_string_utilities.F90,valid_json_hex,780,808,harness/python/run_corpus_verification.py,1715,1859,verified,verified-symbol-match
+f2x50-medium-minpack-001,f2py-wrapper,src/minpack.f90,enorm,371,423,harness/python/run_corpus_verification.py,1557,1606,verified,verified-symbol-match
+f2x50-medium-minpack-002,f2py-wrapper,src/minpack.f90,enorm,371,423,harness/python/run_corpus_verification.py,1557,1606,verified,verified-symbol-match
+f2x50-medium-minpack-003,f2py-wrapper,src/minpack.f90,enorm,371,423,harness/python/run_corpus_verification.py,1557,1606,verified,verified-symbol-match
+f2x50-medium-minpack-004,f2py-wrapper,src/minpack.f90,enorm,371,423,harness/python/run_corpus_verification.py,1557,1606,verified,verified-symbol-match
+f2x50-medium-minpack-005,f2py-wrapper,src/minpack.f90,enorm,371,423,harness/python/run_corpus_verification.py,1557,1606,verified,verified-symbol-match
+f2x50-medium-minpack-006,f2py-wrapper,src/minpack.f90,enorm,371,423,harness/python/run_corpus_verification.py,1557,1606,verified,verified-symbol-match
+f2x50-medium-minpack-007,synthetic-fixture,,,,,harness/python/run_corpus_verification.py,1557,1606,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-minpack-008,synthetic-fixture,,,,,harness/python/run_corpus_verification.py,1557,1606,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-minpack-009,synthetic-fixture,,,,,harness/python/run_corpus_verification.py,1557,1606,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-005,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-006,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-007,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-008,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-009,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-010,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-011,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-mpm3d-f90-012,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1656,1700,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-neural-fortran-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1095,1133,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-neural-fortran-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1095,1133,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-neural-fortran-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1095,1133,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-neural-fortran-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1095,1133,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-neural-fortran-005,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1095,1133,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-neural-fortran-006,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1095,1133,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-neural-fortran-007,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1095,1133,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-neural-fortran-008,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1095,1133,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-packmol-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,880,983,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-packmol-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,880,983,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-packmol-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,880,983,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-packmol-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,880,983,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-packmol-005,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,880,983,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-packmol-006,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,880,983,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-packmol-007,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,880,983,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-packmol-008,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,880,983,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-quadpack-001,original-file-plus-driver,src/quadpack_generic.F90,dqk15,5179,5289,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-002,original-file-plus-driver,src/quadpack_generic.F90,dqk15,5179,5289,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-003,original-file-plus-driver,src/quadpack_generic.F90,dqk15,5179,5289,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-004,original-file-plus-driver,src/quadpack_generic.F90,dqk15,5179,5289,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-005,original-file-plus-driver,src/quadpack_generic.F90,dqk21,5590,5708,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-006,original-file-plus-driver,src/quadpack_generic.F90,dqk21,5590,5708,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-007,original-file-plus-driver,src/quadpack_generic.F90,dqk21,5590,5708,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-008,original-file-plus-driver,src/quadpack_generic.F90,dqk21,5590,5708,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-009,original-file-plus-driver,src/quadpack_generic.F90,dqk21,5590,5708,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-010,original-file-plus-driver,src/quadpack_generic.F90,dqk21,5590,5708,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-011,original-file-plus-driver,src/quadpack_generic.F90,dqk21,5590,5708,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-quadpack-012,original-file-plus-driver,src/quadpack_generic.F90,dqk21,5590,5708,harness/python/run_corpus_verification.py,1960,2178,verified,verified-symbol-match
+f2x50-medium-sisso-001,inline-reimplementation,src/libsisso.f90,corr,142,155,harness/python/run_corpus_verification.py,1609,1712,verified,verified-symbol-match
+f2x50-medium-sisso-002,inline-reimplementation,src/libsisso.f90,corr,142,155,harness/python/run_corpus_verification.py,1609,1712,verified,verified-symbol-match
+f2x50-medium-sisso-003,inline-reimplementation,src/libsisso.f90,det,157,198,harness/python/run_corpus_verification.py,1609,1712,verified,verified-symbol-match
+f2x50-medium-sisso-004,inline-reimplementation,src/libsisso.f90,det,157,198,harness/python/run_corpus_verification.py,1609,1712,verified,verified-symbol-match
+f2x50-medium-stdlib-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-005,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-006,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-007,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-008,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-009,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-010,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-stdlib-011,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,803,877,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-wavelets-001,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wavelets-002,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wavelets-003,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wavelets-004,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wavelets-005,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wavelets-006,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wavelets-007,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wavelets-008,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wavelets-009,original-file-plus-driver,wave_fortran/chisqr.f,cdfchi,66,66,harness/python/run_corpus_verification.py,2181,2252,verified,verified-symbol-match
+f2x50-medium-wps-001,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1703,1738,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-wps-002,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1703,1738,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-wps-003,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1703,1738,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-wps-004,synthetic-fixture,,,,,harness/python/extended_repo_verifiers.py,1703,1738,verified,Synthetic contract; no upstream procedure is claimed.
+f2x50-medium-xtb-001,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1042,1092,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-xtb-002,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1042,1092,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-xtb-003,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1042,1092,verified,Inline reimplementation; no exact upstream procedure is claimed.
+f2x50-medium-xtb-004,inline-reimplementation,,,,,harness/python/extended_repo_verifiers.py,1042,1092,verified,Inline reimplementation; no exact upstream procedure is claimed.

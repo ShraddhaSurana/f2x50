@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ShraddhaSurana/f2x50/schemas/probe.schema.json",
+  "title": "f2x50 behavioral-probe record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["probe_id", "tier", "repository", "case_name", "comparison_mode", "source_oracle", "definition_file"],
+  "properties": {
+    "probe_id": {"type": "string", "pattern": "^f2x50-(low|medium|complex)-[a-z0-9-]+-[0-9]{3}$"},
+    "tier": {"enum": ["low", "medium", "complex"]},
+    "repository": {"type": "string", "minLength": 1},
+    "case_name": {"type": "string", "minLength": 1},
+    "comparison_mode": {"enum": ["numeric", "exact-array", "exact", "exact-bool-array", "exact-bool", "exact-duration-seconds"]},
+    "source_oracle": {"const": "versioned-source-contract"},
+    "definition_file": {"type": "string", "pattern": "^harness/python/.+\\.py$"}
+  }
+}

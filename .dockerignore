@@ -1,0 +1,9 @@
+.git
+.idea
+__pycache__
+*.pyc
+*.so
+*.dylib
+*.mod
+docs/figures/*.pdf
+docs/figures/*.png

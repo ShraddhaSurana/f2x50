@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use f2x50, please cite this software and the associated dataset paper."
+title: "f2x50: A Repository-Scale Fortran-to-X Migration Benchmark"
+type: dataset
+version: 0.1.0
+authors:
+  - family-names: Surana
+    given-names: Shraddha
+  - family-names: Srinivasan
+    given-names: Ashwin
+repository-code: "https://github.com/ShraddhaSurana/f2x50"
+license: CC-BY-4.0
+keywords:
+  - Fortran
+  - software migration
+  - program translation
+  - benchmark
+  - behavioral testing

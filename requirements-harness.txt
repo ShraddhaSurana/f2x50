@@ -1,0 +1,4 @@
+# Versions used for the clean-room replay on 2026-09-19.
+numpy==2.5.3
+meson==1.12.0
+ninja==1.13.2
