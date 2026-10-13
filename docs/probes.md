@@ -11,7 +11,7 @@ The executable definitions are split between:
 - `harness/python/run_corpus_verification.py`, which contains the original reference verifiers; and
 - `harness/python/extended_repo_verifiers.py`, which extends coverage to the complete 50-repository set.
 
-The other Python files inventory candidates and support automated probes. `harness/fortran_stubs/` contains seven small Fortran sources retained for compatibility and development. Version 0.2's released provenance audit contains no `f2py-wrapper` cases: direct cases compile pinned repository files with standalone drivers. Generated `.so` and `.mod` files must not be committed.
+The other Python files inventory candidates and support automated probes. `harness/fortran_stubs/` contains seven small Fortran sources retained for compatibility and development. Version 1.0.0's provenance classification contains no `f2py-wrapper` cases: direct cases compile pinned repository files with standalone drivers. A driver supplies the fixed input, invokes the selected pinned routine, and emits its result; it does not implement the behaviour under comparison. Generated `.so` and `.mod` files must not be committed.
 
 ## Fortran-side execution and source information
 
@@ -27,25 +27,27 @@ python harness/python/run_corpus_verification.py
 
 `F2X_TARGET_ROOT` identifies the Python implementations under evaluation. A new target-language adapter may replace the target loader while retaining the same source programs, inputs, comparison mode, and tolerances.
 
+The complete adapter expects source checkouts under `$F2X_FORTRAN_CORPUS_ROOT/<tier>/<directory>` and Python targets under `$F2X_TARGET_ROOT/<tier>/<repository>/generated_python/src`. Because the acquisition script's default all-repository destination is flat, use the tiered acquisition loop in the [cross-platform running guide](running.md#acquire-all-50-pinned-repositories) for a complete replay. That guide also documents Linux and macOS prerequisites, the supported Windows/WSL2 route, and fixed-denominator verification of the JSON result file.
+
 ## Coverage
 
 ![Probe comparison modes by tier](figures/probe_coverage.png)
 
 | Comparison mode | Probes |
 |---|---:|
-| Numeric tolerance | 278 |
+| Numeric tolerance | 280 |
 | Exact array | 158 |
 | Exact scalar/string | 80 |
 | Exact Boolean array | 33 |
 | Exact Boolean | 5 |
 | Normalized duration | 5 |
-| **Total** | **559** |
+| **Total** | **561** |
 
-Tier totals are 203 low, 199 medium, and 157 complex probes. Every repository has at least five planned probes and at least five `original-file-plus-driver` probes. The 444 direct cases cover 130 repository-routine pairs, and 49 repositories execute at least two distinct pinned routines. Relative to the 382-probe development snapshot, version 0.2 adds 177 checks and raises direct pinned-source execution from 75 to 444 checks across all 50 repositories.
+Tier totals are 203 low, 201 medium, and 157 complex probes. Every repository has at least five planned probes and at least five `original-file-plus-driver` probes. The 446 direct cases cover 131 repository-routine pairs, and all 50 repositories execute at least two distinct pinned routines. The earlier 382-probe development snapshot remains separately versioned; version 1.0.0 is the first stable release and has a 561-probe denominator.
 
 ![Source-evidence categories](figures/source_information.png)
 
-The release-level and per-repository density analysis is in [`coverage-audit.md`](coverage-audit.md). Its deterministic 50-probe sample is an optional checklist for future external review; version 0.2 makes no claim of independent validation.
+The release-level and per-repository density analysis is in [`coverage-analysis.md`](coverage-analysis.md).
 
 ## Adding another target adapter
 

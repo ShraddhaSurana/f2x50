@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build per-probe source information from pinned source trees.
 
-The audit joins every probe to the verifier that defines it, indexes Fortran
+The provenance manifest joins every probe to the verifier that defines it, indexes Fortran
 procedures at the exact recorded Git revision, and emits a reviewable manifest.
 Name matching is intentionally conservative: unresolved or ambiguous matches
 remain visible instead of being guessed.
@@ -29,11 +29,10 @@ FIELDS = (
     "harness_path",
     "harness_start_line",
     "harness_end_line",
-    "audit_status",
-    "audit_note",
+    "source_note",
 )
 
-# Version 0.2's former f2py-backed cases now compile the pinned source files
+# Version 1.0.0's former f2py-backed cases now compile the pinned source files
 # with standalone drivers. Keep the category available for future additions,
 # but do not assign it to any current probe.
 F2PY_CASE_PREFIXES: dict[str, tuple[str, ...]] = {}
@@ -132,6 +131,7 @@ SYMBOL_ALIASES = {
     ("wavelets", "fft_forward_direct"): "cfftf",
     ("wavelets", "fft_backward_direct"): "cfftb",
     ("Cmathtuts", "execute_blas_level3_operations_gemm"): "matrix_multiply",
+    ("Cmathtuts", "validate_computational_results_l2_norm_direct"): "pythagoras",
     ("Nek5000", "dnrm2_scaled"): "dnrm2",
     ("cp2k", "kahan_sum"): "kahan_sum_d1",
     ("cp2k", "kahan_extra_sum"): "kahan_sum_d1",
@@ -172,7 +172,7 @@ class Procedure:
 LOCATOR_OVERRIDES = {
     # These drivers deliberately choose one of several duplicate/generated
     # source copies in the pinned repositories.  Record the exact file that is
-    # compiled instead of leaving the provenance audit ambiguous.
+    # compiled instead of leaving the provenance classification ambiguous.
     ("arpack-ng", "compute_residual_norm"): Procedure(
         "PARPACK/SRC/MPI/pdnorm2.f", "pdnorm2", 20, 89, ""
     ),
@@ -181,6 +181,9 @@ LOCATOR_OVERRIDES = {
     ),
     ("IO-Fortran-Library", "count_substring_chars_direct"): Procedure(
         "src/io_fortran_lib/string_methods_impl.f90", "count_substring_chars", 21, 92, ""
+    ),
+    ("Cmathtuts", "validate_computational_results_l2_norm_direct"): Procedure(
+        "A_fortran/test5/FORSUBS.FOR", "pythagoras", 15, 20, ""
     ),
     ("coretran", "process_strings_parse"): Procedure(
         "src/core/m_strings.f90", "compact", 192, 224, ""
@@ -502,7 +505,7 @@ def oracle_kind(repository: str, case_name: str, procedure: Procedure | None, ve
     if procedure is not None and procedure.normalized in verifier.inline_fingerprints:
         return "extracted-source"
     # An inline program may faithfully reproduce a small behavior, but it is
-    # not called an extraction unless a text-level audit has established that.
+    # not called an extraction unless a text-level comparison has established that.
     # The current release therefore uses the more conservative label.
     return "inline-reimplementation"
 
@@ -510,11 +513,17 @@ def oracle_kind(repository: str, case_name: str, procedure: Procedure | None, ve
 def build(root: Path, corpus_root: Path, output: Path) -> None:
     repositories = read_csv(root / "manifests/repositories.csv")
     probes = read_csv(root / "manifests/probes.csv")
-    directory_by_repo = {row["repository"]: row["directory"] for row in repositories}
+    repository_root_by_repo: dict[str, Path] = {}
+    for row in repositories:
+        flat_root = corpus_root / row["directory"]
+        tiered_root = corpus_root / row["tier"] / row["directory"]
+        repository_root_by_repo[row["repository"]] = (
+            flat_root if flat_root.is_dir() else tiered_root
+        )
     verifiers = index_verifiers(root)
     procedure_index = {
-        repository: index_procedures(corpus_root / directory)
-        for repository, directory in directory_by_repo.items()
+        repository: index_procedures(repository_root)
+        for repository, repository_root in repository_root_by_repo.items()
     }
 
     rows: list[dict[str, str]] = []
@@ -538,12 +547,9 @@ def build(root: Path, corpus_root: Path, output: Path) -> None:
             )
         kind = oracle_kind(repository, probe["case_name"], procedure, verifier)
         note = status
-        audit_status = "verified" if status.startswith("verified-") else "needs-review"
         if status == "not-applicable-synthetic":
-            audit_status = "verified"
             note = "Synthetic contract; no upstream procedure is claimed."
         elif procedure is None and kind == "inline-reimplementation":
-            audit_status = "verified"
             note = "Inline reimplementation; no exact upstream procedure is claimed."
         rows.append(
             {
@@ -556,8 +562,7 @@ def build(root: Path, corpus_root: Path, output: Path) -> None:
                 "harness_path": verifier.path,
                 "harness_start_line": str(verifier.start),
                 "harness_end_line": str(verifier.end),
-                "audit_status": audit_status,
-                "audit_note": note,
+                "source_note": note,
             }
         )
 
@@ -569,7 +574,7 @@ def build(root: Path, corpus_root: Path, output: Path) -> None:
 
     counts: defaultdict[str, int] = defaultdict(int)
     for row in rows:
-        counts[row["audit_status"]] += 1
+        counts[row["oracle_kind"]] += 1
     print(f"wrote {len(rows)} source-information records to {output}")
     print("; ".join(f"{key}={counts[key]}" for key in sorted(counts)))
 

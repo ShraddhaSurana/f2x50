@@ -1,30 +1,30 @@
-# Direct-source expansion audit
+# Direct-source provenance
 
 ## Outcome
 
-The expansion followed the rule declared before inspecting migration outcomes: prefer conversions of existing probes, work in manifest/source order, balance the low, medium, and complex tiers, and add a case only when both a pinned upstream behavior and the archived target behavior are callable. The version 0.2 release candidate contains:
+The curation followed the rule declared before inspecting migration outcomes: prefer conversions of existing probes, work in manifest/source order, balance the low, medium, and complex tiers, and add a case only when both a pinned upstream behavior and the archived target behavior are callable. The version 1.0.0 benchmark contains:
 
 | Source evidence | Probes |
 |---|---:|
-| Original file plus driver | 444 |
+| Original file plus driver | 446 |
 | Text-matched extraction | 8 |
 | Inline reimplementation | 73 |
 | Synthetic fixture | 34 |
-| **Total** | **559** |
+| **Total** | **561** |
 
-Direct-source coverage increased from 75 probes in 12 repositories in the 382-probe development snapshot to 444 probes in all 50 repositories. Every repository has at least five direct probes. The final direct set covers 130 repository-routine pairs; 49 repositories execute at least two distinct pinned routines. Relative to the earlier 412-probe candidate, 147 cases were added and 46 existing weaker contracts were upgraded, raising the direct category from 251 to 444. No `f2py` category remains: former wrapper cases compile the corresponding pinned files with standalone drivers.
+The version 1.0.0 contract contains 446 direct probes across all 50 repositories. Every repository has at least five direct probes and executes at least two distinct pinned routines, spanning 131 repository-routine pairs. The curation converted weaker development-snapshot contracts only when pinned-source execution was established. No `f2py` category remains: former wrapper cases compile the corresponding pinned files with standalone drivers.
 
-The full archived-target replay preserved all 559 cases in the denominator, including repository-level import or invocation errors. It reported 434 agreements, 74 behavioral mismatches, and 51 explicit errors; 26 of 50 repositories passed every check. The 54-case distinct-function expansion contributed 40 agreements, 12 mismatches, and two explicit target-side errors. These figures diagnose the archived target and are not a claim of whole-repository equivalence.
+The full archived-target replay preserved all 561 cases in the denominator, including repository-level import or invocation errors. It reported 436 agreements, 74 behavioral mismatches, and 51 explicit errors; 26 of 50 repositories passed every check. The 54-case distinct-routine curation stage contributed 40 agreements, 12 mismatches, and two explicit target-side errors; the two-case Cmathtuts closure contributed two agreements. These figures diagnose the archived target and are not a claim of whole-repository equivalence.
 
-## Distinct-function expansion
+## Distinct-routine curation
 
-After the five-probe minimum was reached, a third outcome-neutral rule targeted functional concentration. At the 505-probe checkpoint, 390 direct checks covered only 103 repository-routine pairs and 27 repositories obtained all direct evidence from one pinned routine. One new deterministic routine and two whole-execution cases were predeclared for each repository before target execution. `Cmathtuts` had no defensible second source/target match: its only matching routine, `matrix_multiply`, was already covered, while the remaining deterministic examples had no generated counterpart and `ranvec` was nondeterministic. Two forward-declared `wavelets:CFFTB` cases replaced that infeasible pair without manufacturing a correspondence.
+After the five-probe minimum was reached, a third outcome-neutral rule targeted functional concentration. At the 505-probe checkpoint, 390 direct checks covered only 103 repository-routine pairs and 27 repositories obtained all direct evidence from one pinned routine. One new deterministic routine and two whole-execution cases were predeclared for each repository before target execution. The initial source/API pass recorded `Cmathtuts` as infeasible and added two supplemental `wavelets:CFFTB` cases rather than manufacturing a correspondence.
 
-The phase added 54 direct cases and 27 routine pairs, yielding 559 probes, 444 direct cases, and 130 repository-routine pairs. Twenty-six of the 27 one-routine repositories gained a second routine; `Cmathtuts` is the sole documented exception. Array outputs remained one probe per execution, so the increase reflects new inputs to new functions rather than per-element inflation. The complete frozen routine/input ledger and feasibility decision are in `direct-source-expansion-plan.md`.
+The initial phase selected 54 direct cases and 27 routine pairs, yielding 559 probes, 444 direct cases, and 130 repository-routine pairs. A later source-level review identified a defensible mapping from pinned `Cmathtuts:pythagoras` to the generated target's returned Euclidean `l2_norm` metric. Two whole-execution inputs, `(3,4)` and `(-5,12)`, were recorded before execution and retained after both agreed. The stable result is 561 probes, 446 direct cases, 131 repository-routine pairs, and at least two routines in all 50 repositories. Array outputs remain one probe per execution, so they count as one probe per input rather than per-element inflation. The complete frozen routine/input ledger and the superseded feasibility decision are in `direct-source-curation-protocol.md`.
 
 The replay retained every newly exposed disagreement. Fourteen new cases were non-passing across 11 repositories: 12 behavioral mismatches and two target-side broadcasting errors in Packmol. Other findings include false-branch handling in test-drive, unsupported schemes in FOODIE, zero-Ritz convergence in ARPACK, unknown-element behavior in Atomsk, head-layout behavior in neural-fortran, derivative parity in Incompact3d, and dynamic-relaxation state in MPM3D-F90. None was used to change selection, shapes, or tolerances.
 
-## Five-direct-probe expansion
+## Five-direct-probe curation
 
 After the all-repository milestone, a second rule was frozen before any new migration outcome was executed: add exactly enough deterministic boundary, representation, or ordinary cases to bring each repository below five direct probes up to five. This selected 25 repositories and 44 additions. All 44 compile a pinned upstream file through the existing driver; no weaker case was relabelled in this phase.
 
@@ -32,11 +32,11 @@ The added cases include geometric boundaries (`ABAQUS`), scheme spelling and emp
 
 The target replay retained the newly exposed disagreements: FOODIE rejects uppercase and empty scheme names while the migrated factory accepts them; the generated M_strings target overflows on the minimum 32-bit integer; the B-spline target violates the source-derived partition check for this case; and the generated forpy analyzer omits `EXCEPTION_ERROR`. These outcomes were not used to revise selection or tolerances.
 
-## Final 17-repository expansion
+## Final 17-repository curation stage
 
-The last phase supplied direct coverage for all repositories that were still uncovered in the 412-probe candidate. The table names the pinned behavior used; full paths and line ranges are recorded per probe in `manifests/source_information.csv`.
+This curation stage supplied direct coverage for all repositories that were still uncovered at the 412-probe checkpoint. The table names the pinned behavior used; full paths and line ranges are recorded per probe in `manifests/source_information.csv`.
 
-| Tier | Repository | Pinned behavior executed | Direct probes after expansion |
+| Tier | Repository | Pinned behavior executed | Direct probes after curation |
 |---|---|---|---:|
 | Low | `IO-Fortran-Library` | `String%read_file` from `io_fortran_lib_mod.f90` and its pinned submodules | 4 |
 | Low | `bspline-fortran` | `db1val` from the pinned B-spline modules | 4 |
@@ -68,6 +68,6 @@ Stronger oracles intentionally exposed disagreements that weaker mirrors had hid
 
 ## Enforced invariants
 
-`scripts/validate.py` and `tests/test_manifests.py` enforce the 559-row join, the exact four-category totals, all 50 directly covered repositories, at least five direct probes per repository, 130 repository-routine pairs, and 49 repositories with at least two distinct direct routines. The reference runner refuses to emit a report whose result count differs from the fixed 559-probe manifest. All 559 source-information rows are marked verified and contain upstream locators whenever direct or extracted source is claimed.
+`scripts/validate.py` and `tests/test_manifests.py` enforce the 561-row join, the exact four-category totals, all 50 directly covered repositories, at least five direct probes per repository, 131 repository-routine pairs, and all 50 repositories with at least two distinct direct routines. The reference runner refuses to emit a report whose result count differs from the fixed 561-probe manifest. All 561 source-information rows contain a provenance note and include upstream locators whenever direct or extracted source is claimed.
 
-The audit therefore addresses repository breadth, functional breadth, and oracle provenance. It does not claim that 559 targeted contracts validate all 6.57 million physical lines; that limitation remains explicit in the dataset card and coverage audit.
+This documentation therefore records repository breadth, functional breadth, and oracle provenance. It does not claim that 561 targeted contracts validate all 6.57 million physical lines; that limitation remains explicit in the dataset card and coverage analysis.

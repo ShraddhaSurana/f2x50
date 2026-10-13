@@ -3103,14 +3103,21 @@ program run_cmathtuts
       integer(c_int) :: rows_a,cols_a,rows_b,cols_b,rows_c,cols_c
       real(c_double) :: a(rows_a,cols_a),b(rows_b,cols_b),c(rows_c,cols_c)
     end subroutine matrix_multiply
+    subroutine pythagoras(a,b,c)
+      real :: a,b,c
+    end subroutine pythagoras
   end interface
   real(c_double) :: a(2,2), b(2,2), c(2,2)
+  real :: norm_ordinary, norm_signed
   integer(c_int) :: n
   n = 2
   a(1,1)=1.d0; a(1,2)=2.d0; a(2,1)=3.d0; a(2,2)=4.d0
   b(1,1)=5.d0; b(1,2)=6.d0; b(2,1)=7.d0; b(2,2)=8.d0
   call matrix_multiply(a,n,n,b,n,n,c,n,n)
   write(*,'(4(ES24.16E3,1X))') reshape(c, (/4/))
+  call pythagoras(3.0,4.0,norm_ordinary)
+  call pythagoras(-5.0,12.0,norm_signed)
+  write(*,'(2(ES24.16E3,1X))') norm_ordinary, norm_signed
 end program run_cmathtuts
 """
     exe_path, _ = _compile_fortran_program_ordered(
@@ -3121,14 +3128,26 @@ end program run_cmathtuts
             / "Cmathtuts"
             / "A_fortran"
             / "test4"
-            / "fortran_matrix_multiply.f90"
+            / "fortran_matrix_multiply.f90",
+            FORTRAN_CORPUS_ROOT
+            / "medium"
+            / "Cmathtuts"
+            / "A_fortran"
+            / "test5"
+            / "FORSUBS.FOR",
         ],
         inline_sources=[("run_cmathtuts.f90", driver)],
     )
-    output = _run([str(exe_path)], capture_stderr=True).stdout.strip()
+    output_lines = _run([str(exe_path)], capture_stderr=True).stdout.strip().splitlines()
+    matrix_output = _parse_float_line(output_lines[0])
+    pythagoras_output = _parse_float_line(output_lines[1])
     python_module = _load_module(
         "cmathtuts_blas3",
         TARGET_ROOT / "medium" / "Cmathtuts" / "generated_python" / "src" / "blas_level3_operations.py",
+    )
+    validation_module = _load_module(
+        "cmathtuts_result_validator",
+        TARGET_ROOT / "medium" / "Cmathtuts" / "generated_python" / "src" / "result_validator.py",
     )
     a = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float64)
     b = np.array([[5.0, 6.0], [7.0, 8.0]], dtype=np.float64)
@@ -3137,13 +3156,25 @@ end program run_cmathtuts
         "column_major",
         {"gemm": True},
     )
+
+    def _pythagoras_l2() -> np.ndarray:
+        values = []
+        for first, second in ((3.0, 4.0), (-5.0, 12.0)):
+            _, metrics = validation_module.validate_computational_results(
+                np.array([[first], [second]], dtype=np.float64),
+                np.zeros((2, 1), dtype=np.float64),
+                {"absolute_tolerance": 0.0, "relative_tolerance": 0.0},
+            )
+            values.append(metrics["l2_norm"])
+        return np.asarray(values, dtype=np.float64)
+
     return _repo_result(
         "medium",
         "Cmathtuts",
         [
             *_numeric_case_checks(
                 "execute_blas_level3_operations_gemm",
-                _parse_float_line(output),
+                matrix_output,
                 results[0].ravel(order="F"),
                 ["c11", "c21", "c12", "c22"],
                 atol=1.0e-12,
@@ -3151,11 +3182,20 @@ end program run_cmathtuts
             ),
             _numeric_check(
                 "execute_blas_level3_operations_gemm_trace",
-                np.array([_parse_float_line(output)[0] + _parse_float_line(output)[3]], dtype=np.float64),
+                np.array([matrix_output[0] + matrix_output[3]], dtype=np.float64),
                 np.array([np.trace(results[0])], dtype=np.float64),
                 atol=1.0e-12,
                 rtol=1.0e-12,
                 note="Compares the matrix trace derived from the complete pinned matrix_multiply result.",
+            ),
+            *_guarded_case_checks(
+                "validate_computational_results_l2_norm_direct",
+                pythagoras_output,
+                ["ordinary_3_4", "signed_minus5_12"],
+                _pythagoras_l2,
+                atol=1.0e-6,
+                rtol=1.0e-6,
+                note="Compiles pinned pythagoras and compares its Euclidean norm with the generated target's returned l2_norm metric.",
             ),
         ],
     )

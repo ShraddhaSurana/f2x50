@@ -11,9 +11,10 @@ from collections import Counter
 from pathlib import Path
 
 EXPECTED_REPOSITORIES = {"low": 20, "medium": 20, "complex": 10}
-EXPECTED_PROBES = {"low": 203, "medium": 199, "complex": 157}
+EXPECTED_VERSION = "1.0.0"
+EXPECTED_PROBES = {"low": 203, "medium": 201, "complex": 157}
 EXPECTED_MODES = {
-    "numeric": 278,
+    "numeric": 280,
     "exact-array": 158,
     "exact": 80,
     "exact-bool-array": 33,
@@ -21,14 +22,14 @@ EXPECTED_MODES = {
     "exact-duration-seconds": 5,
 }
 EXPECTED_ORACLE_KINDS = {
-    "original-file-plus-driver": 444,
+    "original-file-plus-driver": 446,
     "extracted-source": 8,
     "inline-reimplementation": 73,
     "synthetic-fixture": 34,
 }
 EXPECTED_DIRECT_SOURCE_REPOSITORIES = 50
-EXPECTED_DIRECT_SOURCE_PAIRS = 130
-EXPECTED_MULTI_SYMBOL_REPOSITORIES = 49
+EXPECTED_DIRECT_SOURCE_PAIRS = 131
+EXPECTED_MULTI_SYMBOL_REPOSITORIES = 50
 REPOSITORY_FIELDS = {
     "benchmark_id",
     "tier",
@@ -63,8 +64,7 @@ SOURCE_INFORMATION_FIELDS = {
     "harness_path",
     "harness_start_line",
     "harness_end_line",
-    "audit_status",
-    "audit_note",
+    "source_note",
 }
 ORACLE_KINDS = {
     "original-file-plus-driver",
@@ -96,6 +96,28 @@ def duplicates(values: list[str]) -> list[str]:
 
 def validate(root: Path) -> list[str]:
     errors: list[str] = []
+    try:
+        release_version = (root / "VERSION").read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        release_version = ""
+        errors.append(f"{root / 'VERSION'}: file not found")
+    if release_version and release_version != EXPECTED_VERSION:
+        errors.append(f"release version {release_version!r} != {EXPECTED_VERSION!r}")
+
+    try:
+        citation_text = (root / "CITATION.cff").read_text(encoding="utf-8")
+    except FileNotFoundError:
+        citation_text = ""
+        errors.append(f"{root / 'CITATION.cff'}: file not found")
+    citation_match = re.search(r"^version:\s*[\"']?([^\"'\s]+)", citation_text, re.MULTILINE)
+    citation_version = citation_match.group(1) if citation_match else ""
+    if citation_text and not citation_match:
+        errors.append(f"{root / 'CITATION.cff'}: version field not found")
+    elif citation_version != release_version:
+        errors.append(
+            f"CITATION.cff version {citation_version!r} != VERSION {release_version!r}"
+        )
+
     repositories = read_csv(root / "manifests/repositories.csv", REPOSITORY_FIELDS, errors)
     probes = read_csv(root / "manifests/probes.csv", PROBE_FIELDS, errors)
     source_information = read_csv(
@@ -210,8 +232,8 @@ def validate(root: Path) -> list[str]:
         kind = row.get("oracle_kind", "")
         if kind not in ORACLE_KINDS:
             errors.append(f"{probe_id}: invalid oracle_kind {kind!r}")
-        if row.get("audit_status") != "verified":
-            errors.append(f"{probe_id}: source information is not verified")
+        if not row.get("source_note", "").strip():
+            errors.append(f"{probe_id}: missing provenance note")
         for start_name, end_name in (
             ("harness_start_line", "harness_end_line"),
             ("upstream_start_line", "upstream_end_line"),

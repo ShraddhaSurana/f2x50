@@ -29,7 +29,7 @@ f2x50-medium-07,medium,Fortran-Astrodynamics-Toolkit,28140,5,0.177683,2,5,0,0,0,
 f2x50-medium-08,medium,dftd4,16350,7,0.428135,2,7,0,0,0,0
 f2x50-medium-09,medium,minpack,10257,9,0.877450,2,9,0,0,0,0
 f2x50-medium-10,medium,coretran,40726,8,0.196435,2,7,0,0,1,0
-f2x50-medium-11,medium,Cmathtuts,28183,5,0.177412,1,5,0,0,0,0
+f2x50-medium-11,medium,Cmathtuts,28183,7,0.248377,2,7,0,0,0,0
 f2x50-medium-12,medium,xtb,191946,8,0.041678,2,7,0,0,1,0
 f2x50-medium-13,medium,Incompact3d,45429,7,0.154087,2,7,0,0,0,0
 f2x50-medium-14,medium,json-fortran,26232,6,0.228728,6,6,0,0,0,0

@@ -2053,7 +2053,7 @@ end program run_astro
 
 
 def verify_quadpack() -> RepoResult:
-    # Retained as historical audit material: version 0.1 originally executed
+    # Retained as historical material: version 0.1 originally executed
     # this extraction.  The active driver below now compiles the pinned
     # quadpack_double module directly.
     _retired_dqk15_extraction = """

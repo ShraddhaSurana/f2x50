@@ -1,14 +1,14 @@
-# Direct-source expansion plan for the version 0.2 release candidate
+# Direct-source curation protocol for version 1.0.0
 
-Implementation status: complete. The audit is recorded in [`direct-source-expansion-audit.md`](direct-source-expansion-audit.md). All 50 repositories have at least five direct checks, the 559-probe manifest contains 444 direct checks spanning 130 repository-routine pairs, and 49 repositories execute at least two distinct pinned routines. `Cmathtuts` is the sole documented source/target feasibility exclusion.
+Implementation status: complete. The resulting provenance is recorded in [`direct-source-provenance.md`](direct-source-provenance.md). All 50 repositories have at least five direct checks and at least two distinct pinned routines; the 561-probe manifest contains 446 direct checks spanning 131 repository-routine pairs.
 
 Status: predeclared before implementation and before inspecting any migration-target outcomes
-Public comparison baseline: `ea69976` (382-probe version 0.1 release candidate)
+Historical comparison point: `ea69976` (382-probe version 0.1 development snapshot)
 Declared: 2026-09-20
 
 ## Objective
 
-The current version 0.2 release candidate has 134 `original-file-plus-driver` probes, but they are concentrated in 12 of the 50 repositories. This expansion targets the 38 repositories without that evidence. Each must receive at least two checks whose expected values are produced by executing an exact file from the pinned upstream revision with a small driver.
+At this curation checkpoint, 134 `original-file-plus-driver` probes were concentrated in 12 of the 50 repositories. The protocol therefore targeted the 38 repositories without that evidence. Each had to receive at least two checks whose expected values are produced by executing an exact file from the pinned upstream revision with a small driver.
 
 The target is 76 additional or converted direct-source checks: 24 in low-tier repositories, 36 in medium-tier repositories, and 16 in complex-tier repositories. Probe quantity is secondary to repository coverage. Existing weak checks are converted where a verified upstream procedure match already exists; new checks are added only when the current checks are synthetic or have no resolvable upstream procedure.
 
@@ -23,7 +23,7 @@ No migration pass/fail result, error magnitude, or target output may be consulte
    - returns or emits a deterministic value without network access, interactive input, or nondeterministic parallel state; and
    - can be compiled with a small driver on the release toolchain.
 4. Use two fixed cases for that procedure, preferably one ordinary and one boundary/sign/empty case. Prefer a second distinct procedure when it is available without pulling in a substantially larger dependency closure.
-5. If a candidate cannot be compiled because of an unavailable external dependency or requires application-scale state, record the path, symbol, and reason in the implementation audit, then advance to the next candidate. This feasibility decision must not use target behavior.
+5. If a candidate cannot be compiled because of an unavailable external dependency or requires application-scale state, record the path, symbol, and reason in the implementation record, then advance to the next candidate. This feasibility decision must not use target behavior.
 6. Convert an existing weak probe instead of adding a probe whenever the observable behavior is the same. New probe IDs are permitted only when no current case represents the selected upstream behavior.
 7. Tolerances must follow the precision of the pinned routine and must be justified from source kinds or measured compiler-level rounding, never widened in response to a migration target.
 8. Regenerate source information from the exact 50-repository corpus. The validator must enforce both the final category totals and at least two `original-file-plus-driver` probes per repository.
@@ -65,29 +65,29 @@ Two cases will be selected by the source-order protocol above for each repositor
 
 - All 50 repositories have at least two original-file-plus-driver probes.
 - Every selected upstream path is at the recorded Git revision and is present in `source_information.csv`.
-- The complete manifest, source-information audit, unit tests, and standard validator pass.
+- The complete manifest, source-information record, unit tests, and standard validator pass.
 - All new or converted direct-source programs compile and execute from the exact corpus on the release toolchain.
 - Any deviation from the frozen set is recorded with a source-level feasibility reason and no target-result information.
 
 ## Recorded implementation outcome
 
-The source-order feasibility pass found callable matches for the 17 repositories that remained uncovered after the first expansion stage. Some exact case counts differ from the provisional two-per-repository target because array-valued routines yield multiple independently registered scalar/element contracts. In particular, ElmerFEM's selected nearest-neighbour fixtures did not correspond to the pinned solver routines; the implementation advanced to `GaussPointsTriangle` in `fem/src/Integration.F90` and registered its deterministic 1-, 3-, and 4-point outputs. Similar callable alternatives are recorded in the audit for the other repositories. These choices were made from source/API feasibility before target outcomes were inspected.
+The source-order feasibility pass found callable matches for the 17 repositories that remained uncovered after the first curation stage. Some exact case counts differ from the provisional two-per-repository target because array-valued routines yield multiple independently registered scalar/element contracts. In particular, ElmerFEM's selected nearest-neighbour fixtures did not correspond to the pinned solver routines; the implementation advanced to `GaussPointsTriangle` in `fem/src/Integration.F90` and registered its deterministic 1-, 3-, and 4-point outputs. Similar callable alternatives are recorded in the provenance documentation for the other repositories. These choices were made from source/API feasibility before target outcomes were inspected.
 
-The final manifest adds 49 cases relative to the 412-probe candidate and upgrades 46 existing weaker cases. Validation enforces 461 probes, 346 `original-file-plus-driver` rows, all 50 repositories directly covered, and a minimum of two direct checks per repository.
+At this curation checkpoint, the manifest contained 49 cases beyond the earlier 412-probe checkpoint and converted 46 existing weaker cases. Validation enforced 461 probes, 346 `original-file-plus-driver` rows, all 50 repositories directly covered, and a minimum of two direct checks per repository.
 
-## Predeclared five-direct-probe expansion
+## Predeclared five-direct-probe curation stage
 
-Declared on 2026-09-20 before executing any new target cases. To strengthen routine/input depth without selecting cases from observed migration outcomes, version 0.2 will raise the minimum direct-source allocation from two to five probes per repository. Only the 25 repositories below five direct cases are eligible. For each, add exactly enough deterministic cases to reach five, producing 44 additional cases and a planned denominator of 505.
+Declared on 2026-09-20 before executing any new target cases. To establish routine/input depth without selecting cases from observed migration outcomes, the protocol raises the minimum direct-source allocation from two to five probes per repository. Only the 25 repositories below five direct cases are eligible. For each, add exactly enough deterministic cases to reach five, producing 44 additional cases and a planned denominator of 505.
 
 Case selection uses the already compiled pinned routine. Inputs are chosen from source/API domains in this order: an unrepresented boundary or empty/zero case, an unrepresented sign/case/format variant, then an additional ordinary value. Array-valued routines may register an additional independently compared element. Selection, tolerances, and expected output shapes are frozen before the migrated target is executed. Failures and errors remain in the denominator. No existing weak contract is relabelled by this phase.
 
 The eligible repositories are `ABAQUS`, `FOODIE`, `forpy`, `packmol`, `petsc`, `stdlib`, `toml-f`, `WPS`, `coretran`, `hdf5`, `xtb`, `atomsk`, `bspline-fortran`, `Cmathtuts`, `crest`, `dftd4`, `Fortran-Astrodynamics-Toolkit`, `fortran2018-examples`, `fortranlib`, `fpm`, `IO-Fortran-Library`, `M_args-main`, `M_strings`, `M_time`, and `SISSO`. The first eight receive three cases, the next three receive two, and the remaining fourteen receive one, for 44 additions total.
 
-Implementation outcome: all 44 cases compiled and remained in the fixed denominator. The resulting manifest has 505 probes, including 390 original-file-plus-driver cases; every repository has at least five. The archived-target replay classified the additions as 39 agreements, four behavioral mismatches, and one explicit error.
+Implementation outcome: all 44 cases compiled and remained in the complete set of planned cases. The resulting manifest has 505 probes, including 390 original-file-plus-driver cases; every repository has at least five. The archived-target replay classified the additions as 39 agreements, four behavioral mismatches, and one explicit error.
 
-## Predeclared distinct-function expansion
+## Predeclared distinct-routine curation stage
 
-Declared on 2026-09-21 after the 505-probe source-information audit and before executing any newly selected migration-target case. The audit found that 390 direct checks represented only 103 repository-symbol pairs; 27 repositories still obtained every direct check from one pinned symbol. This phase prioritizes functional breadth rather than increasing the number of observations of an already-covered routine.
+Declared on 2026-09-21 after the 505-probe source-information review and before executing any newly selected migration-target case. That review found that 390 direct checks represented only 103 repository-symbol pairs; 27 repositories still obtained every direct check from one pinned symbol. This phase prioritizes functional breadth rather than increasing the number of observations of an already-covered routine.
 
 For each of those 27 repositories, select one additional deterministic upstream routine. Prefer the first public routine in source order within the already compiled module or dependency closure that has a corresponding callable behavior in the archived target. If none is feasible, inspect pinned files in lexicographic order and procedures in source order. Selection may use names, signatures, and documentation from the target, but not target outputs, pass/fail results, or error magnitudes. Record a source-level feasibility reason before advancing past a candidate.
 
@@ -129,9 +129,9 @@ executions: an array result remains one registered probe.
 | atomsk | `ATOMSPECIES` | atomic numbers 1, 6, and 26 | out-of-range atomic number 999 | Pinned atomic-number-to-symbol routine is the exact lookup behavior exercised by the generated XYZ serializer; cases cover common one-/two-letter symbols and the unknown-element fallback. |
 | fpm | `new_version_from_string` through public `new_version` | `12.34.56` | leading-zero form `01.002.0003` | Exact pinned version parser corresponding to generated `parse_version_string`; normalized numeric components cover a normal semantic version and integer normalization at each component. |
 | WPS | `get_path` | nested absolute `GEOGRID.TBL` path | separator-free relative `METGRID.TBL` path | Pinned path extraction is compared with the directories of table paths returned by the generated WPS configuration parser; cases cover nested paths and its documented `./` fallback. |
-| wavelets (supplemental) | `CFFTB` | four complex frequency samples with nonzero real and imaginary parts | one complex sample (`N=1`) | Exact inverse-FFT counterpart exposed by the generated target; added after the Cmathtuts feasibility exclusion so the expansion still reaches 54 genuine cases without manufacturing a source/target match. |
+| wavelets (supplemental) | `CFFTB` | four complex frequency samples with nonzero real and imaginary parts | one complex sample (`N=1`) | Exact inverse-FFT counterpart exposed by the generated target; added after the Cmathtuts feasibility exclusion so the predeclared stage still reaches 54 genuine cases without manufacturing a source/target match. |
 
-### Recorded source-level feasibility exclusion
+### Superseded source-level feasibility exclusion
 
 `Cmathtuts` has no defensible second source/target routine pair in the pinned
 snapshot.  Its `matrix_multiply` procedure is already covered and is the only
@@ -142,8 +142,22 @@ C-interoperability demonstrations with no generated callable counterpart, while
 new Cmathtuts target case.  Two supplemental `CFFTB` cases preserve the planned
 54-case addition while keeping every new probe behaviorally grounded.
 
+### Predeclared closure of the Cmathtuts exception
+
+Before executing either source or target for this addition, the remaining
+one-routine repository was assigned exactly two whole-execution cases from the
+pinned `pythagoras` subroutine in `A_fortran/test5/FORSUBS.FOR`.  The ordinary
+case uses `(3, 4)` and the sign case uses `(-5, 12)`.  Each case compares the
+subroutine's Euclidean norm with the `l2_norm` metric returned by the archived
+generated target's `validate_computational_results` entry point when its
+computed column vector is compared with zero.  This mapping is selected because
+both sides execute the same two-element Euclidean-norm behavior; no outcome,
+tolerance, or derived element-level result was inspected before selection.  The
+two cases were retained in the complete set of planned cases; both subsequently agreed with
+zero observed difference.
+
 ### Recorded distinct-function outcome
 
-All 54 predeclared cases compile and execute their pinned source routines, remain in the fixed denominator, and have verified source locators. The source-information audit reports 444 `original-file-plus-driver`, 8 `extracted-source`, 73 `inline-reimplementation`, and 34 `synthetic-fixture` rows across 559 probes. The direct cases span 130 repository-routine pairs. Twenty-six of the 27 previously one-routine repositories gained a second routine; the frozen `Cmathtuts` exclusion leaves it as the only one-routine repository.
+All 54 cases from the initial phase and both predeclared Cmathtuts closure cases compile and execute their pinned source routines, remain among the planned cases, and have source locators. The source-information manifest records 446 `original-file-plus-driver`, 8 `extracted-source`, 73 `inline-reimplementation`, and 34 `synthetic-fixture` rows across 561 probes. The direct cases span 131 repository-routine pairs, and all 50 repositories execute at least two distinct pinned routines.
 
-The archived-target replay reported 40 agreements, 12 behavioral mismatches, and two explicit errors among the 54 additions. Across the complete fixed denominator it reported 434 agreements, 74 mismatches, and 51 errors. These outcomes were observed only after selection and were not used to alter inputs, tolerances, expected shapes, or the feasibility decision.
+The archived-target replay reported 40 agreements, 12 behavioral mismatches, and two explicit errors among the initial 54 additions; both Cmathtuts closure cases agreed. Across all 561 planned cases it reported 436 agreements, 74 mismatches, and 51 errors. These outcomes were observed only after selection and were not used to alter inputs, tolerances, expected shapes, or the mapping decision.

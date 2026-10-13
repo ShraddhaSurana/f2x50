@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Summarize probe density, oracle strength, and a deterministic audit sample."""
+"""Summarize probe density and source-evidence strength."""
 
 from __future__ import annotations
 
 import csv
-import hashlib
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -41,7 +40,6 @@ def main() -> None:
         probes_by_repo[probe["repository"]].append(probe)
 
     coverage_rows: list[dict[str, object]] = []
-    sample_rows: list[dict[str, object]] = []
     for repository in repositories:
         name = repository["repository"]
         repo_probes = probes_by_repo[name]
@@ -67,27 +65,6 @@ def main() -> None:
                 **{kind: kind_counts[kind] for kind in ORACLE_ORDER},
             }
         )
-        chosen = min(
-            repo_probes,
-            key=lambda row: hashlib.sha256(
-                f"f2x50-v0.2-independent-audit:{row['probe_id']}".encode()
-            ).hexdigest(),
-        )
-        source = source_information_by_id[chosen["probe_id"]]
-        sample_rows.append(
-            {
-                "benchmark_id": repository["benchmark_id"],
-                "tier": repository["tier"],
-                "repository": name,
-                "probe_id": chosen["probe_id"],
-                "case_name": chosen["case_name"],
-                "oracle_kind": source["oracle_kind"],
-                "review_status": "pending-independent-review",
-                "reviewer": "",
-                "review_notes": "",
-            }
-        )
-
     coverage_fields = [
         "benchmark_id",
         "tier",
@@ -99,17 +76,11 @@ def main() -> None:
         *ORACLE_ORDER,
     ]
     write_csv(root / "manifests/coverage_by_repository.csv", coverage_rows, coverage_fields)
-    write_csv(
-        root / "manifests/independent_audit_sample.csv",
-        sample_rows,
-        list(sample_rows[0]),
-    )
-
     total_loc = sum(int(row["fortran_loc"]) for row in repositories)
     total_kinds = Counter(row["oracle_kind"] for row in source_information)
     densities = [float(row["probes_per_kloc"]) for row in coverage_rows]
     lines = [
-        "# Behavioral-coverage audit",
+        "# Behavioral-coverage analysis",
         "",
         "This report quantifies the released behavioral contract; it does not claim statement, branch, or semantic coverage of the upstream repositories.",
         "",
@@ -130,18 +101,18 @@ def main() -> None:
             "",
             "## Interpretation",
             "",
-            "The fixed contract guarantees breadth across all 50 repositories and preserves every planned case in the denominator. It is targeted regression evidence, not a proof of repository equivalence. Original-file-plus-driver probes provide the strongest direct source connection; version 0.2 has no remaining f2py-wrapper cases. Inline reimplementations and synthetic fixtures are disclosed separately because compiling a small Fortran program is not by itself evidence that the pinned upstream implementation was executed.",
+            "The fixed contract guarantees breadth across all 50 repositories and preserves every planned case in the denominator. It is targeted regression evidence, not a proof of repository equivalence. Original-file-plus-driver probes provide the strongest direct source connection; version 1.0.0 has no remaining f2py-wrapper cases. Inline reimplementations and synthetic fixtures are disclosed separately because compiling a small Fortran program is not by itself evidence that the pinned upstream implementation was executed.",
             "",
-            "`manifests/coverage_by_repository.csv` supports tier/repository decompositions. `manifests/independent_audit_sample.csv` deterministically selects one probe per repository using SHA-256 over the stable probe ID. A person who did not author the corresponding verifier should check the source locator, input, expected behavior, and comparison rule and fill the three review columns. Until then, the sample is explicitly marked pending and must not be described as independently audited.",
+            "`manifests/coverage_by_repository.csv` supports tier/repository decompositions. The figures are descriptive summaries of the published manifests.",
             "",
-            "## Recommended expansion rule",
+            "## Recommended future-coverage rule",
             "",
             "Future versions should prioritize public routines not yet represented, boundary/error cases, and probes that replace inline reimplementations with execution of the pinned source. Additions must be selected without inspecting a migration method's pass/fail outcomes and must increment the benchmark version.",
             "",
         ]
     )
-    (root / "docs/coverage-audit.md").write_text("\n".join(lines), encoding="utf-8")
-    print("wrote coverage audit, per-repository metrics, and 50-probe review sample")
+    (root / "docs/coverage-analysis.md").write_text("\n".join(lines), encoding="utf-8")
+    print("wrote coverage analysis and per-repository metrics")
 
 
 if __name__ == "__main__":

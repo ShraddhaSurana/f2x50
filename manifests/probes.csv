@@ -558,3 +558,5 @@ f2x50-medium-wps-010,medium,WPS,config_table_path_direct_nested_ordinary,exact,v
 f2x50-medium-wps-011,medium,WPS,config_table_path_direct_relative_no_separator_boundary,exact,versioned-source-contract,harness/python/extended_repo_verifiers.py
 f2x50-medium-wavelets-012,medium,wavelets,fft_backward_direct_ordinary,numeric,versioned-source-contract,harness/python/run_corpus_verification.py
 f2x50-medium-wavelets-013,medium,wavelets,fft_backward_direct_singleton_boundary,exact-array,versioned-source-contract,harness/python/run_corpus_verification.py
+f2x50-medium-cmathtuts-006,medium,Cmathtuts,validate_computational_results_l2_norm_direct_ordinary_3_4,numeric,versioned-source-contract,harness/python/extended_repo_verifiers.py
+f2x50-medium-cmathtuts-007,medium,Cmathtuts,validate_computational_results_l2_norm_direct_signed_minus5_12,numeric,versioned-source-contract,harness/python/extended_repo_verifiers.py
